@@ -8,6 +8,8 @@ const express = require('express'),
       port = process.env.PORT || 3000;
 
 app.use(express.static(publicPath));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}));
 
 
 mongoose.connection.on("connected", () => {
@@ -31,6 +33,15 @@ mongoose.connection.on("error", (error) => {
 });
 
 mongoose.connect('mongodb://localhost/customer_support')
+
+let ticketModel = require('./models/query-model.js');
+let customerModel = require('./models/customer-model.js');
+
+let queryRoute = require('./controllers/query-controller.js');
+queryRoute.controller(app);
+
+let userRoute = require('./controllers/user-controller.js');
+userRoute.controller(app);
 
 app.listen(port, ()=>{
     console.log(`Listening to port ${port}`);
