@@ -32,10 +32,10 @@ mongoose.connection.on("error", (error) => {
     console.log("ERROR: " + error);
 });
 
-mongoose.connect('mongodb://localhost/customer_support')
+mongoose.connect('mongodb://localhost/user_support')
 
 let ticketModel = require('./models/query-model');
-let customerModel = require('./models/customer-model');
+let userModel = require('./models/user-model');
 
 let queryRoute = require('./controllers/query-controller');
 queryRoute.controller(app);

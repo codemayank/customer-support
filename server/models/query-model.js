@@ -7,13 +7,11 @@ let ticketSchema = new mongoose.Schema({
     },
     email : {
         type:String,
-        required:true,
-        unique : true
+        required:true
     },
     phoneNumber : {
         type:Number,
-        required:true,
-        unique:true
+        required:true
     },
     qTitle : {
         type:String,
@@ -24,9 +22,18 @@ let ticketSchema = new mongoose.Schema({
         required:true
     },
     resolved : {type:Boolean},
+    _creator : {
+        type : mongoose.Schema.Types.ObjectId,
+        required : true
+    },
     createdAt : {
         type : Date
-    }
+    },
+    messages : [{
+        from : {type:mongoose.Schema.Types.ObjectId},
+        to : {type:mongoose.Schema.Types.ObjectId},
+        createdAt : Date
+    }]
 })
 
-mongoose.model('Ticket', ticketSchema);
+module.exports = mongoose.model('Ticket', ticketSchema);
