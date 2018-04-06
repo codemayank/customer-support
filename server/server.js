@@ -34,13 +34,13 @@ mongoose.connection.on("error", (error) => {
 
 mongoose.connect('mongodb://localhost/customer_support')
 
-let ticketModel = require('./models/query-model.js');
-let customerModel = require('./models/customer-model.js');
+let ticketModel = require('./models/query-model');
+let customerModel = require('./models/customer-model');
 
-let queryRoute = require('./controllers/query-controller.js');
+let queryRoute = require('./controllers/query-controller');
 queryRoute.controller(app);
 
-let userRoute = require('./controllers/user-controller.js');
+let userRoute = require('./controllers/user-controller');
 userRoute.controller(app);
 
 app.listen(port, ()=>{

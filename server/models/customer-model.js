@@ -46,4 +46,39 @@ customerSchema.methods.generateAuthToken = function(){
       });
 }
 
-mongoose.model('Customer', customerSchema);
+customerSchema.statics.findByToken = function(token){
+      let Customer = this;
+      let decoded;
+
+      try{
+            decoded = jwt.verify(token, 'secret');
+      }catch(e){
+            return Promise.reject();
+      }
+      return Customer.findOne({
+            '_id': decoded._id,
+            'tokens.token' : token,
+            'tokens.access' : 'auth'
+      })
+
+}
+
+customerSchema.pre('save', function(next){
+      let customer = this;
+
+      if(customer.isModified('password')){
+            let password = customer.password;
+            bcrypt.genSalt(10, (err, salt) => {
+                  bcrypt.hash(password, salt, (err, hash)=>{
+                        customer.password = hash;
+                        next();
+                  })
+            })
+      }else{
+            next()
+      }
+})
+
+
+
+module.exports = mongoose.model('Customer', customerSchema);

@@ -1,8 +1,9 @@
 const express = require('express'),
       router = express.Router(),
-      mongoose = require('mongoose'),
-      customer = mongoose.model('Customer'),
-      _ = require('lodash');
+    //   mongoose = require('mongoose'),
+      customer = require('../models/customer-model'),
+      _ = require('lodash'),
+      authenticate = require('./middlewares/authenticate');
 
 
 module.exports.controller = (app) =>{
@@ -18,6 +19,10 @@ module.exports.controller = (app) =>{
         }).catch((e)=>{
             res.status(400).send(e)
         })
+    })
+
+    router.get('/me', authenticate, (req, res) => {
+        res.send(req.customer);
     })
     app.use('/user' ,router);
 }
