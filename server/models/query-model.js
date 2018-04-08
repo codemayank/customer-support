@@ -24,17 +24,18 @@ let ticketSchema = new mongoose.Schema({
     resolved : {type:Boolean},
     status : {type : String},
     _creator : {
-        type : mongoose.Schema.Types.ObjectId,
-        required : true
+        id : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        username : String
     },
     createdAt : {
         type : Date
     },
     messages : [{
-        from : {type:mongoose.Schema.Types.ObjectId},
-        to : {type:mongoose.Schema.Types.ObjectId},
-        messageBody : {type:String, required : true},
-        createdAt : Date
+        type : mongoose.Schema.Types.ObjectId,
+        ref: "Message"
     }]
 })
 

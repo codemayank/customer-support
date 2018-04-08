@@ -8,7 +8,8 @@ const express = require('express'),
       port = process.env.PORT || 3000,
       
       ticketModel = require('./models/query-model'),
-      userModel = require('./models/user-model');
+      userModel = require('./models/user-model'),
+      messageModel = require('./models/message-model');
             
 
 app.use(express.static(publicPath));

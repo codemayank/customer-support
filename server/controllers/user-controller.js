@@ -4,11 +4,12 @@ const express = require('express'),
       user = require('../models/user-model'),
       admin = require('../models/admin-model'),
       _ = require('lodash'),
-      authenticate = require('./middlewares/authenticate');
+      authorisation = require('./middlewares/authenticate');
 
 
 module.exports.controller = (app) =>{
 
+    //route for user registration
     router.post('/user-registration', (req, res) => {
         let body = _.pick(req.body, ['username', 'email', 'password', 'phoneNumber'])
         let newUser = new user(body);
@@ -22,7 +23,7 @@ module.exports.controller = (app) =>{
         })
     })
 
-    //create new admin_id
+    //route for admin registration
     router.post('/admin-registration', (req, res)=>{
         let body = _.pick(req.body,['username', 'email', 'password', 'admin_id', 'phoneNumber', 'userType']);
         let newAdmin = new admin(body);
@@ -35,12 +36,12 @@ module.exports.controller = (app) =>{
         })
     });
 
-    //post /user/user-login
+    //route to login the user
     router.post('/user-login', (req, res)=>{
-        let body = _.pick(req.body, ['username', 'password', 'loginAuth']);
+        let body = _.pick(req.body, ['username', 'password']);
         
         user.findByCredentials(body.username, body.password).then((user)=>{
-            return user.generateAuthToken(body.loginAuth).then((token)=>{
+            return user.generateAuthToken('userAuth').then((token)=>{
                 res.header('x-auth', token).send(user);
             })
         }).catch((e)=>{
@@ -48,7 +49,21 @@ module.exports.controller = (app) =>{
         })
     })
 
-    router.delete('/user-logout', authenticate, (req, res)=>{
+    //route to login the admin
+    router.post('/admin-login', (req, res)=>{
+        let body = _.pick(req.body, ['admin_id', 'password']);
+        
+        user.findByCredentials(body.admin_id, body.password).then((user)=>{
+            return user.generateAuthToken('adminAuth').then((token)=>{
+                res.header('x-auth', token).send(user);
+            })
+        }).catch((e)=>{
+            res.status(400).send();
+        })
+    })
+
+    //route to logout the user
+    router.delete('/user-logout', authorisation.authenticate, (req, res)=>{
         req.user.removeToken(req.token).then(()=>{
             res.status(200).send();
         }, ()=>{
