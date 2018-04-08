@@ -22,6 +22,7 @@ let ticketSchema = new mongoose.Schema({
         required:true
     },
     resolved : {type:Boolean},
+    status : {type : String},
     _creator : {
         type : mongoose.Schema.Types.ObjectId,
         required : true
@@ -32,6 +33,7 @@ let ticketSchema = new mongoose.Schema({
     messages : [{
         from : {type:mongoose.Schema.Types.ObjectId},
         to : {type:mongoose.Schema.Types.ObjectId},
+        messageBody : {type:String, required : true},
         createdAt : Date
     }]
 })

@@ -5,14 +5,21 @@ const express = require('express'),
       path = require('path'),
       publicPath = path.join(__dirname, '../client'),
       async = require('async'),
-      port = process.env.PORT || 3000;
+      port = process.env.PORT || 3000,
+      
+      ticketModel = require('./models/query-model'),
+      userModel = require('./models/user-model');
+            
 
 app.use(express.static(publicPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
 
+
+
 mongoose.connection.on("connected", () => {
+
     console.log("Connection Established");
   });
   
@@ -34,8 +41,6 @@ mongoose.connection.on("error", (error) => {
 
 mongoose.connect('mongodb://localhost/user_support')
 
-let ticketModel = require('./models/query-model');
-let userModel = require('./models/user-model');
 
 let queryRoute = require('./controllers/query-controller');
 queryRoute.controller(app);
