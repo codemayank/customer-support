@@ -3,14 +3,13 @@ const express = require('express'),
       ticket = require('../models/query-model'),
       message = require('../models/message-model')
       _ = require('lodash'),
-      authorisation = require('../controllers/middlewares/authenticate');
+      authenticate = require('../controllers/middlewares/authenticate');
 
 module.exports.controller = (app) => {
 
     //route to submit a query.
-    router.post('/user/submit-query', authorisation.authenticate, (req, res) =>{
+    router.post('/user/submit-query', authenticate, (req, res) =>{
         let newTicket = new ticket({
-            name : req.user.username,
             email : req.user.email,
             phoneNumber : req.user.phoneNumber,
             qTitle : req.body.qTitle,
@@ -18,7 +17,11 @@ module.exports.controller = (app) => {
             resolved : false,
             status : "open",
             createdAt : new Date().getTime(),
-            _creator : req.user._id
+            _creator : {
+                id : req.user._id,
+                username : req.user.username
+
+            }
         });
         newTicket.save((err)=>{
             if(err){
@@ -30,9 +33,10 @@ module.exports.controller = (app) => {
     });
 
     //route to show the queries to the user.
-    router.get('/user/show-queries', authorisation.authenticate, (req, res) => {
+    router.get('/user/show-queries', authenticate, (req, res) => {
+        console.log(req.user._id);
         ticket.find({
-            _creator : req.user._id
+            '_creator.id' : req.user._id
         }).then((tickets)=>{
             res.send({tickets});
         }, (e) =>{
@@ -41,24 +45,26 @@ module.exports.controller = (app) => {
     });
 
     //route to edit the query
-    router.put('/user/edit-query', authorisation.checkTicketAccess('editTicket'), (req, res)=>{
+    router.put('/user/edit-query', authenticate, (req, res)=>{
         let body = _.pick(req.body, ['ticket_id', 'qTitle', 'qDescription']);
-        console.log(body);
         ticket.findOneAndUpdate({
-            '_creator' : req.user._id,
+            '_creator.id' : req.user._id,
             '_id' : body.ticket_id
-        }, {'qTitle' : body.qTitle, 'qDescription' : body.qDescription}, (err, query)=>{
+        }, {'qTitle' : body.qTitle, 'qDescription' : body.qDescription}, {new : true}, (err, query)=>{
             if(err){
+                console.log('error in saving the edited query.')
                 res.status(400).send(err)
             }
+            console.log('sending edited query.');
+            console.log(query);
             res.send(query);
         })
     })
 
     //route to delete the query
-    router.delete('/user/delete-query', authorisation.checkTicketAccess('editTicket'), (req, res) =>{
+    router.delete('/user/delete-query', authenticate, (req, res) =>{
         ticket.findOneAndRemove({
-            '_creator' : req.user._id,
+            '_creator.id' : req.user._id,
             '_id' : req.body.ticket_id
         }, (err)=>{
             if(err){
@@ -68,22 +74,27 @@ module.exports.controller = (app) => {
     })
 
     //route to mark the query as resolved from user end.
-    router.put('/user/mark-resolved', authorisation.checkTicketAccess('editTicket'), (req, res)=>{
+    router.put('/user/mark-resolved', authenticate, (req, res)=>{
         ticket.findOneAndUpdate({
-            '_creator' : req.user._id,
+            '_creator.id' : req.user._id,
             '_id' : req.body.ticket_id
-        }, {'resolved' : true}, (err, message)=>{
+        }, {'resolved' : true},{new :true} ,(err, query)=>{
             if(err){
-                res.status(400).send()
+                res.status(400).send('unable to resolve query.')
+            }if(!query){
+                res.send('could not resolve query as you do not own this.')
+            }else{
+                res.send('Your query has been marked as resolved');
             }
             //send e-mail to the admins that has been corresponding with this guy that the query has been marked as resolved.
-            res.send('Your query has been marked as resolved');
+            
         })
     })
 
     //route to show all the queries to the admins.
-    router.get('/admin/show-queries', authorisation.authenticate, (req, res)=>{
-        if(req.user.access = "adminAuth"){
+    router.get('/admin/show-queries', authenticate, (req, res)=>{
+        console.log("req user==>",req.token);
+        if(req.user.access === "adminAuth"){
             ticket.find().then((tickets)=>{
                 res.send({tickets});
             }, (e)=>{
@@ -95,14 +106,13 @@ module.exports.controller = (app) => {
     })
 
     //route to mark the qury as closed by the admin.
-    router.put('/admin/close-query', authorisation.checkTicketAccess('closeTicket'), (req, res)=>{
+    router.put('/admin/close-query', authenticate, (req, res)=>{
         if(req.user.access === "adminAuth"){
             ticket.findOneAndUpdate({'_id' : req.body._id, 'resolved' : true}, {'status' : 'Closed'}, (err, ticket)=>{
                 if(err){
                     res.status(400).send(err);
                 }
                 res.send('This query has now been closed and will now be archived.');
-                //fire event to send e-mail to the user that the admin has market their query as closed.
             })
         }
         res.status(401).send()

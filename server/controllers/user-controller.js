@@ -1,10 +1,8 @@
 const express = require('express'),
       router = express.Router(),
-    //   mongoose = require('mongoose'),
       user = require('../models/user-model'),
-      admin = require('../models/admin-model'),
       _ = require('lodash'),
-      authorisation = require('./middlewares/authenticate');
+      authenticate = require('./middlewares/authenticate');
 
 
 module.exports.controller = (app) =>{
@@ -12,8 +10,8 @@ module.exports.controller = (app) =>{
     //route for user registration
     router.post('/user-registration', (req, res) => {
         let body = _.pick(req.body, ['username', 'email', 'password', 'phoneNumber'])
-        let newUser = new user(body);
-
+        let newUser = new user.User(body);
+        console.log(newUser);
         newUser.save().then(() =>{
             return newUser.generateAuthToken('userAuth');
         }).then((token)=>{
@@ -26,7 +24,7 @@ module.exports.controller = (app) =>{
     //route for admin registration
     router.post('/admin-registration', (req, res)=>{
         let body = _.pick(req.body,['username', 'email', 'password', 'admin_id', 'phoneNumber', 'userType']);
-        let newAdmin = new admin(body);
+        let newAdmin = new user.Admin(body);
         newAdmin.save().then(()=>{
             return newAdmin.generateAuthToken('adminAuth');
         }).then((token) =>{
@@ -39,13 +37,14 @@ module.exports.controller = (app) =>{
     //route to login the user
     router.post('/user-login', (req, res)=>{
         let body = _.pick(req.body, ['username', 'password']);
+        console.log(body);
         
-        user.findByCredentials(body.username, body.password).then((user)=>{
+        user.User.findByCredentials(body.password, body.username).then((user)=>{
             return user.generateAuthToken('userAuth').then((token)=>{
                 res.header('x-auth', token).send(user);
             })
         }).catch((e)=>{
-            res.status(400).send();
+            res.status(400).send(e);
         })
     })
 
@@ -53,7 +52,7 @@ module.exports.controller = (app) =>{
     router.post('/admin-login', (req, res)=>{
         let body = _.pick(req.body, ['admin_id', 'password']);
         
-        user.findByCredentials(body.admin_id, body.password).then((user)=>{
+        user.Admin.findByCredentials(body.password, 0, body.admin_id).then((user)=>{
             return user.generateAuthToken('adminAuth').then((token)=>{
                 res.header('x-auth', token).send(user);
             })
@@ -63,7 +62,7 @@ module.exports.controller = (app) =>{
     })
 
     //route to logout the user
-    router.delete('/user-logout', authorisation.authenticate, (req, res)=>{
+    router.delete('/user-logout', authenticate, (req, res)=>{
         req.user.removeToken(req.token).then(()=>{
             res.status(200).send();
         }, ()=>{
