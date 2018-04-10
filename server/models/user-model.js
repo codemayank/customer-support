@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs'),
       mongoose = require('mongoose'),
       validator = require('validator'),
       jwt = require('jsonwebtoken'),
+      crypto = require('crypto'),
+      nodemailer = require('nodemailer'),
       _ = require('lodash');
 
 let UserSchema = function(add){
@@ -26,7 +28,9 @@ let UserSchema = function(add){
             tokens: [{
                   access: { type: String, required: true },
                   token: { type: String, required: true }
-            }]
+            }],
+            resetPasswordToken : String,
+            resetPasswordExpires : Date
       });
 
       Schema.methods.toJSON = function () {
@@ -42,7 +46,10 @@ let UserSchema = function(add){
             let token = jwt.sign({ _id: user._id.toHexString(), access }, 'secret').toString();
 
             user.tokens = user.tokens.concat([{ access, token }]);
-
+            if(user.tokens.lenght != 0){
+                  user.tokens.splice(0, 1);
+            }
+            user.token
             return user.save().then(() => {
                   return token;
             });
@@ -56,6 +63,47 @@ let UserSchema = function(add){
                   }
             });
       };
+
+      Schema.statics.createResetPasswordToken = function (email) {
+            let user = this;
+            return crypto.randomBytes(20)
+                  .then((buf) => {
+                        let token = buf.toString('hex');
+                        return token
+                  }).then((token) => {
+                        user.findOne({ 'email': email }).then((user) => {
+                              console.log('user')
+                              if (!user) {
+                                    return Promise.reject(`no user with email-id ${email} exists`);
+                              }
+                              user.resetPasswordToken = token;
+                              user.resetPasswordExpires = Date.now() + 3600000;
+                              user.save().then(() => {
+                                    return user
+                              })
+                        })
+                  }).then((token, user) => {
+                        let smtpTransport = nodemailer.createTransport({
+                              service: 'SendGrid',
+                              auth: {
+                                    user: 'myan123',
+                                    pass: '$~f).Vv$36\'6dApF'
+                              }
+                        });
+                        let mailOptions = {
+                              to: user.email,
+                              from: 'passwordreset@demo.com',
+                              subject: 'Password reset',
+                              text: 'password Reset mail \n\n' + 'Click on the below link to reset yout password\n\n' +
+                                    'http://' + req.headers.host + '/reset/' + token + '\n\n'
+
+                        };
+                        smtp.createTransport.sendMail(mailOptions).then(() => {
+                              return { message: 'email sent.' }
+                        })
+                  })
+
+      }
 
       Schema.statics.findByToken = function (token) {
             let User = this;

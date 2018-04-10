@@ -94,7 +94,7 @@ module.exports.controller = (app) => {
     //route to show all the queries to the admins.
     router.get('/admin/show-queries', authenticate, (req, res)=>{
         console.log("req user==>",req.token);
-        if(req.user.access === "adminAuth"){
+        if(req.user.tokens[0].access === "adminAuth"){
             ticket.find().then((tickets)=>{
                 res.send({tickets});
             }, (e)=>{
@@ -107,15 +107,21 @@ module.exports.controller = (app) => {
 
     //route to mark the qury as closed by the admin.
     router.put('/admin/close-query', authenticate, (req, res)=>{
-        if(req.user.access === "adminAuth"){
-            ticket.findOneAndUpdate({'_id' : req.body._id, 'resolved' : true}, {'status' : 'Closed'}, (err, ticket)=>{
+        console.log(req.body);
+        if(req.user.tokens[0].access === "adminAuth"){
+            ticket.findOneAndUpdate({'_id' : req.body.ticket_id, 'resolved' : true}, {'status' : 'Closed'}, (err, ticket)=>{
                 if(err){
                     res.status(400).send(err);
+                }else{
+                    console.log(ticket);
+                    res.send('This query has now been closed and will now be archived.');
+
                 }
-                res.send('This query has now been closed and will now be archived.');
             })
+        }else{
+            res.status(401).send()
+
         }
-        res.status(401).send()
     })
 
     app.use('/query',router);

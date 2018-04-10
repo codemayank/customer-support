@@ -70,5 +70,14 @@ module.exports.controller = (app) =>{
         });
     })
 
+    //forgot password route.
+    router.post('/user-forgot-password', (req, res)=>{
+        user.User.createResetPasswordToken(req.body.email).then((message)=>{
+            res.status(200).send(message);
+        }).catch((e)=>{
+            res.status(500).send()
+        })
+    })
+
     app.use('/user' ,router);
 }
