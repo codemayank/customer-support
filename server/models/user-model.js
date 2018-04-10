@@ -6,9 +6,13 @@ const bcrypt = require('bcryptjs'),
       nodemailer = require('nodemailer'),
       _ = require('lodash');
 
-let UserSchema = function(add){
+let UserSchema = function (add) {
       let Schema = new mongoose.Schema({
-            username: { type: String, required: true, unique: true },
+            username: {
+                  type: String,
+                  required: true,
+                  unique: true
+            },
             email: {
                   type: String,
                   required: true,
@@ -18,7 +22,11 @@ let UserSchema = function(add){
                         message: '{VALUE} is not  a valid e-mail.'
                   }
             },
-            phoneNumber: { type: Number, required: true, unique: true },
+            phoneNumber: {
+                  type: Number,
+                  required: true,
+                  unique: true
+            },
             password: {
                   type: String,
                   required: true,
@@ -26,11 +34,17 @@ let UserSchema = function(add){
 
             },
             tokens: [{
-                  access: { type: String, required: true },
-                  token: { type: String, required: true }
+                  access: {
+                        type: String,
+                        required: true
+                  },
+                  token: {
+                        type: String,
+                        required: true
+                  }
             }],
-            resetPasswordToken : String,
-            resetPasswordExpires : Date
+            resetPasswordToken: String,
+            resetPasswordExpires: Date
       });
 
       Schema.methods.toJSON = function () {
@@ -43,13 +57,19 @@ let UserSchema = function(add){
       Schema.methods.generateAuthToken = function (userAccess) {
             let user = this;
             let access = userAccess;
-            let token = jwt.sign({ _id: user._id.toHexString(), access }, 'secret').toString();
+            let token = jwt.sign({
+                  _id: user._id.toHexString(),
+                  access
+            }, 'secret').toString();
 
-            user.tokens = user.tokens.concat([{ access, token }]);
-            if(user.tokens.lenght != 0){
+            if (user.tokens.length != 0) {
                   user.tokens.splice(0, 1);
             }
-            user.token
+            user.tokens = user.tokens.concat([{
+                  access,
+                  token
+            }]);
+
             return user.save().then(() => {
                   return token;
             });
@@ -59,50 +79,102 @@ let UserSchema = function(add){
             let user = this;
             return user.update({
                   $pull: {
-                        tokens: { token }
+                        tokens: {
+                              token
+                        }
                   }
             });
       };
 
-      Schema.statics.createResetPasswordToken = function (email) {
-            let user = this;
-            return crypto.randomBytes(20)
-                  .then((buf) => {
-                        let token = buf.toString('hex');
-                        return token
-                  }).then((token) => {
-                        user.findOne({ 'email': email }).then((user) => {
-                              console.log('user')
-                              if (!user) {
-                                    return Promise.reject(`no user with email-id ${email} exists`);
-                              }
-                              user.resetPasswordToken = token;
-                              user.resetPasswordExpires = Date.now() + 3600000;
-                              user.save().then(() => {
-                                    return user
-                              })
+      Schema.statics.createResetPasswordToken = function (email, host) {
+            console.log("email -->",email);
+            console.log("host-->", host);
+            let User = this;
+            let buf = crypto.randomBytes(20);
+            let token = buf.toString('hex');
+            return User.findOne({
+                        'email': email
+                  })
+                  .then((user) => {
+                        console.log('User-->',user)
+                        if (!User) {
+                              return Promise.reject(`no User with email-id ${email} exists`);
+                        }
+                        user.resetPasswordToken = token;
+                        user.resetPasswordExpires = Date.now() + 3600000;
+                        return user.save().then(() => {
+                              return user
                         })
-                  }).then((token, user) => {
+                  })
+                  .then((user) => {
+                        console.log('token & User -->', token, user);
                         let smtpTransport = nodemailer.createTransport({
                               service: 'SendGrid',
                               auth: {
                                     user: 'myan123',
-                                    pass: '$~f).Vv$36\'6dApF'
+                                    pass: "$~f).Vv$36'6dApF"
                               }
                         });
                         let mailOptions = {
                               to: user.email,
                               from: 'passwordreset@demo.com',
                               subject: 'Password reset',
-                              text: 'password Reset mail \n\n' + 'Click on the below link to reset yout password\n\n' +
-                                    'http://' + req.headers.host + '/reset/' + token + '\n\n'
-
-                        };
-                        smtp.createTransport.sendMail(mailOptions).then(() => {
-                              return { message: 'email sent.' }
+                              text: 'password Reset mail \n\n' + 'use the below token to reset yout password\n\n' + 
+                                    token
+                                    
+        
+                        }
+        
+                        return smtpTransport.sendMail(mailOptions).then(() => {
+                               console.log('mail has been sent')
+                              return {
+                                    message: 'email sent.'
+                              }
                         })
                   })
+        
+        }
 
+      
+        Schema.statics.changePassword = function(token, newPassword){
+            let User = this;
+            return User.findOne({
+                  resetPasswordToken : token,
+                  resetPasswordExpires : {
+                        $gt : Date.now()
+                  }
+            }).then((user)=>{
+                  if(!user){
+                        return Promise.reject('password reset token is invalid or has expired.')
+                  }
+                  user.password = newPassword;
+                  user.resetPasswordToken = undefined;
+                  user.resetPasswordExpires = undefined;
+
+                  return user.save().then(()=>{
+                        return user;
+                  })
+                  
+            })
+            .then((user)=>{
+                  let smtpTransport = nodemailer.createTransport({
+                        service: 'SendGrid',
+                        auth: {
+                              user: 'myan123',
+                              pass: "$~f).Vv$36'6dApF"
+                        }
+                  });
+                  let mailOptions = {
+                        to : user.email,
+                        from : 'passwordreset@demo.com',
+                        subject : 'Your Password has been changed',
+                        text : 'Your password has been changed successfully'
+                  }
+                  return smtpTransport.sendMail(mailOptions).then(()=>{
+                        console.log('e-mail has been sent successfully.')
+                        return {message : 'password successfully changed.'}
+                  })
+            })
       }
 
       Schema.statics.findByToken = function (token) {
@@ -125,7 +197,13 @@ let UserSchema = function(add){
 
       Schema.statics.findByCredentials = function (password, username = 0, admin_id = 0) {
             let User = this;
-            return User.findOne({$or : [{ username }, {admin_id}]}).then((user) => {
+            return User.findOne({
+                  $or: [{
+                        username
+                  }, {
+                        admin_id
+                  }]
+            }).then((user) => {
                   console.log(user)
                   if (!user) {
                         let message = "user Not found.";
@@ -160,7 +238,7 @@ let UserSchema = function(add){
             }
       })
 
-      if(add){
+      if (add) {
             Schema.add(add);
       }
 
@@ -169,6 +247,15 @@ let UserSchema = function(add){
 
 let userSchema = new UserSchema();
 let User = mongoose.model('User', userSchema);
-let adminSchema = new UserSchema({admin_id : {type:Number, required:true, unique:true}});
+let adminSchema = new UserSchema({
+      admin_id: {
+            type: Number,
+            required: true,
+            unique: true
+      }
+});
 let Admin = mongoose.model('Admin', adminSchema);
-module.exports = {User : User, Admin : Admin};
+module.exports = {
+      User: User,
+      Admin: Admin
+};

@@ -71,12 +71,29 @@ module.exports.controller = (app) =>{
     })
 
     //forgot password route.
-    router.post('/user-forgot-password', (req, res)=>{
-        user.User.createResetPasswordToken(req.body.email).then((message)=>{
-            res.status(200).send(message);
+    router.post('/forgot-password', (req, res)=>{
+        let userType = user.User;
+        if(req.header('x-userType') == 'Admin'){
+            userType = user.Admin
+        }
+        userType.createResetPasswordToken(req.body.email).then(()=>{
+            res.status(200).send();
         }).catch((e)=>{
-            res.status(500).send()
+            res.status(500).send(e)
         })
+    })
+
+    router.post('/reset-password', (req, res)=>{
+        let userType = user.User;
+        if(req.header('x-userType') == 'Admin'){
+            userType = user.Admin
+        }
+        userType.changePassword(req.body.token, req.body.newPassword).then(()=>{
+            res.status(200).send()            
+        }).catch((e)=>{
+            res.status(500).send(e)
+        })
+
     })
 
     app.use('/user' ,router);
