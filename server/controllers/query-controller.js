@@ -1,9 +1,12 @@
 const express = require('express'),
       router = express.Router(),
       ticket = require('../models/query-model'),
-      message = require('../models/message-model')
+      message = require('../models/message-model'),
+      user = require('../models/user-model'),
       _ = require('lodash'),
+      queryEventEmitter =  require('../lib/mailer'),
       authenticate = require('../controllers/middlewares/authenticate');
+
 
 module.exports.controller = (app) => {
 
@@ -27,7 +30,8 @@ module.exports.controller = (app) => {
             if(err){
                 console.log('There was an error in saving your query at this time.', err);
             }
-            //fire event to send an e-mail to the client that their query has been received by the system and an admin will reply to them soon.
+            
+            queryEventEmitter.emit('queryCreated', {ticket : newTicket, db : user.Admin});
             res.send(newTicket);
         });
     });
@@ -58,6 +62,7 @@ module.exports.controller = (app) => {
             console.log('sending edited query.');
             console.log(query);
             res.send(query);
+            queryEventEmitter.emit('queryAction', {ticket_id : req.body.ticket_id, db : user.Admin, action : "edited"})
         })
     })
 
@@ -69,7 +74,10 @@ module.exports.controller = (app) => {
         }, (err)=>{
             if(err){
                 res.status(400).send(err);
-            }res.send('The query has been deleted.');
+            }else{
+                queryEventEmitter.emit('queryAction', {ticket_id : req.body.ticket_id, db : user.Admin, action : "deleted"})
+                res.send('The query has been deleted.');
+            }
         })
     })
 
@@ -85,9 +93,9 @@ module.exports.controller = (app) => {
                 res.send('could not resolve query as you do not own this.')
             }else{
                 res.send('Your query has been marked as resolved');
+                queryEventEmitter.emit('queryAction', {ticket_id : req.body.ticket_id, db : user.Admin, action : 'Marked Resolved'});
             }
             //send e-mail to the admins that has been corresponding with this guy that the query has been marked as resolved.
-            
         })
     })
 

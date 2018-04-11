@@ -60,7 +60,7 @@ let UserSchema = function (add) {
             let token = jwt.sign({
                   _id: user._id.toHexString(),
                   access
-            }, 'secret').toString();
+            }, 'random_secret', {expiresIn : '7d'}).toString(); //generated token expires in 7 days.
 
             if (user.tokens.length != 0) {
                   user.tokens.splice(0, 1);

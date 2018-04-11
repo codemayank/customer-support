@@ -4,7 +4,9 @@ const express = require('express'),
     router = express.Router(),
     ticket = require('../models/query-model'),
     message = require('../models/message-model'),
+    user = require('../models/user-model')
     authenticate = require('./middlewares/authenticate'),
+    queryEventEmitter = require('../lib/mailer'),
     _ = require('lodash');
 
 module.exports.controller = (app) => {
@@ -33,6 +35,15 @@ module.exports.controller = (app) => {
                             ticket.save()
                             res.send('message successfully added');
                             //fire event to send e-mail to the user that they have received the response from an admin.
+                            let userType = user.Admin
+                            let queryValue = {}
+                            if(req.user.tokens[0].access === 'adminAuth'){
+                                userType = user.User
+                                queryValue = {'email' : ticket.email}
+                            }
+                            queryEventEmitter.emit('messageSent', {message : message, ticket : ticket, db : userType, queryValue : queryValue});
+
+
                         }
                     })
                 }else{

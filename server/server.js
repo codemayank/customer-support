@@ -56,9 +56,3 @@ app.listen(port, ()=>{
     console.log(`Listening to port ${port}`);
 })
 
-//TODO make the auth token expire after 7 days.
-//TODO implement forgot password -> user/admins.
-//TODO send e-mail everytime a query is created. -> to admins
-//TODO send e-mail everytime a message is sent. -> to user / admins
-//TODO send e-mail everytime a query is resolved. -> to admins
-//TODO send e-mail everytime a query is closed -> to user
