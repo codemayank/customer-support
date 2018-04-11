@@ -1,0 +1,17 @@
+{
+  "name": "customer-support-client",
+  "homepage": "https://github.com/codemayank/customer-support",
+  "authors": [
+    "Mayank Yadav"
+  ],
+  "description": "client for the customer support app",
+  "main": "index.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
