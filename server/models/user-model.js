@@ -4,7 +4,8 @@ const bcrypt = require('bcryptjs'),
       jwt = require('jsonwebtoken'),
       crypto = require('crypto'),
       nodemailer = require('nodemailer'),
-      _ = require('lodash');
+      _ = require('lodash'),
+      jwtSecret = 'Random_Secret';
 
 let UserSchema = function (add) {
       let Schema = new mongoose.Schema({
@@ -50,8 +51,12 @@ let UserSchema = function (add) {
       Schema.methods.toJSON = function () {
             let user = this;
             let userObject = user.toObject();
+            userObject.roles = ['userAuth'];
+            if(userObject.tokens[0].access === 'adminAuth'){
+                  userObject.roles.push('adminAuth')
+            }
 
-            return _.pick(userObject, ['_id', 'username']);
+            return _.pick(userObject, ['_id', 'username', 'role']);
       }
 
       Schema.methods.generateAuthToken = function (userAccess) {
@@ -60,7 +65,7 @@ let UserSchema = function (add) {
             let token = jwt.sign({
                   _id: user._id.toHexString(),
                   access
-            }, 'random_secret', {expiresIn : '7d'}).toString(); //generated token expires in 7 days.
+            }, jwtSecret, {expiresIn : '7d'}).toString(); //generated token expires in 7 days.
 
             if (user.tokens.length != 0) {
                   user.tokens.splice(0, 1);
@@ -182,7 +187,7 @@ let UserSchema = function (add) {
             let decoded;
 
             try {
-                  decoded = jwt.verify(token, 'secret');
+                  decoded = jwt.verify(token, jwtSecret);
                   console.log(decoded);
             } catch (e) {
                   return Promise.reject();
