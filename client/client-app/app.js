@@ -5,7 +5,7 @@
 
     app.run(['$rootScope', '$transitions', '$state', '$localStorage', '$http', 'authService', 
     function($rootScope, $transitions, $state, $localStorage, $http, authService){
-        
+        $rootScope.storage = $localStorage;
         $http.defaults.headers.common['x-auth'] = $rootScope.storage.token;
         $transitions.onStart({
             to : function(state){

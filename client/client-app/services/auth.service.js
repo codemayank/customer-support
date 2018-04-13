@@ -13,8 +13,9 @@
 
         function authenticate(url, credentials) {
             var deferred = $q.defer();
-            http.post(url, credentials)
+            $http.post(url, credentials)
                 .then(function setCredentials(response) {
+                    console.log(response.headers());
                     deferred.resolve(response);
                 },
 
@@ -26,7 +27,9 @@
         };
 
         function setCredentials(response) {
-            $rootScope.storage = response.token;
+            console.log('set-Credentials fires', response.headers().x-auth);
+            $rootScope.storage.token = response.headers().x-auth
+            console.log($rootScope.storage.token);
             $http.defaults.headers.common['x-auth'] = response.token;
             $rootScope.storage.token = response.token;
             $rootScope.storage.roles = response.roles;

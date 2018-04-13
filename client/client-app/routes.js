@@ -7,7 +7,7 @@
             $stateProvider
                 .state("user-dashBoard", {
                     url: "/user/dashboard",
-                    component: "user-dashboard",
+                    component: "userDashboard",
                     data: {
                         authRequired: true,
                         roles: 'userAuth'
@@ -15,7 +15,7 @@
                 })
                 .state("admin-dashBoard", {
                     url: "/admin/dashboard",
-                    component: "admin-dashboard",
+                    component: "admiDashboard",
                     data: {
                         authRequired: true,
                         roles: 'adminAuth'
@@ -23,28 +23,28 @@
                 })
                 .state("user-login", {
                     url: "/user/login",
-                    component: "user-login",
+                    component: "userLogin",
                     data: {
                         authRequired: false
                     }
                 })
                 .state("admin-login", {
                     url: "/admin/login",
-                    component: "admin-login",
+                    component: "adminLogin",
                     data: {
                         authRequired: false
                     }
                 })
                 .state("user-register", {
                     url: "/user/register",
-                    component: "user-register",
+                    component: "userRegister",
                     data: {
                         authRequired: false
                     }
                 })
                 .state("admin-register", {
                     url: "/admin/register",
-                    component: "admin-register",
+                    component: "adminRegister",
                     data: {
                         authRequired: false
                     }
@@ -57,8 +57,8 @@
                     }
                 })
                 .state("access-denied", {
-                    url: "/access-denied",
-                    component: "access-denied",
+                    url: "/accessDenied",
+                    component: "accessDenied",
                     data: {
                         authRequired: false
                     }

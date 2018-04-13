@@ -57,7 +57,7 @@ module.exports.controller = (app) =>{
                 res.header('x-auth', token).send(user);
             })
         }).catch((e)=>{
-            res.status(400).send();
+            res.status(400).send(e);
         })
     })
 
