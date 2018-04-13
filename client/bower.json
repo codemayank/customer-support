@@ -17,6 +17,7 @@
   "dependencies": {
     "angular": "1.6.9",
     "angular-ui-router": "^1.0.15",
-    "ngstorage": "^0.3.11"
+    "ngstorage": "^0.3.11",
+    "bootstrap": "^4.1.0"
   }
 }
