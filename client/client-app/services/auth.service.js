@@ -25,29 +25,32 @@
   
       function getUserStatus() {
         return $http({
-            method : 'GET',
-            url : '/user/status',
-            headers : {
-                'x-auth' : window.localStorage.authToken
+          method: 'GET',
+          url: '/user/status',
+          headers: {
+            'x-auth': window.localStorage.authToken,
+            'x-userType' : window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
+          }
+        })
+        .then(function successCallback(response) {
+            if (response.data.status === 200) {
+              console.log('getting user status');
+              user = true;
             }
         })
-          .then(function successCallback(response) {
-              if (response.data.status === 200) {
-                console.log('getting user status');
-                user = true;
-              } 
-            },
-            function errorCallback(response) {
-              user = false;
-  
-            })
+        .catch(function errorCallback(response) {
+            console.log(response);
+            user = false;
+          })
       }
   
       function login(type, credentials) {
         var deferred = $q.defer();
         var url = '/user/user-login'
+        var index = 0;
         if(type === 'admin'){
             url = '/user/admin-login';
+            index = 1;
         }
         $http.post(url, credentials)
           .then(function successCallback(response) {
@@ -56,11 +59,11 @@
                 user = true;
                 window.localStorage.authToken = response.headers()['x-auth'];
                 window.localStorage.username = response.data.username;
-                window.localStorage.userRole = response.data.roles[0];
+                window.localStorage.userRole = response.data.roles[index];
                 deferred.resolve(response);
               }
-            },
-            function errorCallback(response) {
+            }).catch(function errorCallback(response) {
+              console.log(response);
               user = false;
               deferred.reject(response);
             })
@@ -76,7 +79,8 @@
           method : 'POST',
           url : '/user/user-logout',
           headers : {
-            'x-auth' : token
+            'x-auth' : token,
+            'x-userType' : window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
           } 
         })
           .then(function successCallback(response) {

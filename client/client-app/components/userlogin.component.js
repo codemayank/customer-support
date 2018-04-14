@@ -3,7 +3,7 @@
     angular.module('app')
         .component('userLogin', {
             templateUrl: './client-app/templates/userlogin.component.html',
-            controller: function ($location, authService) {
+            controller: function ($location, authService, Notification) {
                 var vm = this;
 
                 vm.login = function () {
@@ -15,10 +15,12 @@
                         .then(function (response) {
                             $location.path('/user/dashboard');
                             vm.loginForm = {};
+                            var welcomeMessage = "welcome " + response.data.username;
+                            Notification.success(welcomeMessage);
                                 
                         }, function(_error){
                             console.log(_error);
-                            alert("Login Error" + (_error.message ? _error.message : _error.data.error))
+                            Notification.error('Incorrect username or password.')
                         })
                 }
             }
