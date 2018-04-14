@@ -56,7 +56,7 @@ let UserSchema = function (add) {
                   userObject.roles.push('adminAuth')
             }
 
-            return _.pick(userObject, ['_id', 'username', 'role']);
+            return _.pick(userObject, ['_id', 'username', 'roles']);
       }
 
       Schema.methods.generateAuthToken = function (userAccess) {

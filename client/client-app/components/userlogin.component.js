@@ -3,22 +3,22 @@
     angular.module('app')
         .component('userLogin', {
             templateUrl: './client-app/templates/userlogin.component.html',
-            controller: function ($state, authService) {
+            controller: function ($location, authService) {
                 var vm = this;
 
                 vm.login = function () {
-                    var url = '/user/user-login';
                     let credentials = {
                         username: vm.loginForm.username,
-                        password: vm.registerForm.password,
+                        password: vm.loginForm.password,
                     }
-                    authService.authenticate(url, credentials)
+                    authService.login('user', credentials)
                         .then(function (response) {
-                            console.log(response);
-                            $state.go('userDashboard');
-                        })
-                        .catch(function (response) {
-                            console.log(response)
+                            $location.path('/user/dashboard');
+                            vm.loginForm = {};
+                                
+                        }, function(_error){
+                            console.log(_error);
+                            alert("Login Error" + (_error.message ? _error.message : _error.data.error))
                         })
                 }
             }

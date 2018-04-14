@@ -51,7 +51,6 @@ module.exports.controller = (app) =>{
     //route to login the admin
     router.post('/admin-login', (req, res)=>{
         let body = _.pick(req.body, ['admin_id', 'password']);
-        
         user.Admin.findByCredentials(body.password, 0, body.admin_id).then((user)=>{
             return user.generateAuthToken('adminAuth').then((token)=>{
                 res.header('x-auth', token).send(user);
@@ -62,7 +61,7 @@ module.exports.controller = (app) =>{
     })
 
     //route to logout the user
-    router.delete('/user-logout', authenticate, (req, res)=>{
+    router.post('/user-logout', authenticate, (req, res)=>{
         req.user.removeToken(req.token).then(()=>{
             res.status(200).send();
         }, ()=>{
@@ -94,6 +93,10 @@ module.exports.controller = (app) =>{
             res.status(500).send(e)
         })
 
+    })
+
+    router.get('/status', authenticate, (req, res)=>{
+        res.status(200).send();
     })
 
     app.use('/user' ,router);
