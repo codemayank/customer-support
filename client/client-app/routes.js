@@ -28,6 +28,20 @@
                         role: 'userAuth'
                     }
                 })
+                .when('/user/create-ticket',{
+                    template: '<create-ticket></create-ticket>',
+                    access : {
+                        restricted : true,
+                        role : 'userAuth'
+                    }
+                })
+                .when('/user/:query_id', {
+                    template : '<query-detail></query-detail>',
+                    access : {
+                        restricted : true,
+                        role : 'userAuth'
+                    }
+                })
                 .when('/admin/login', {
                     template: '<admin-login></admin-login>',
                     access: {
@@ -61,7 +75,7 @@
 
     angular.module('app').run(function ($rootScope, $location, $route, authService) {
         $rootScope.$on('$routeChangeStart', function (event, next, current) {
-            if(next.access.restricted ){
+            if(next.access.restricted){
                 authService.getUserStatus()
                 .then(function () {
                     var userRole = window.localStorage.userRole;

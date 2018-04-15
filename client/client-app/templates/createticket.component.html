@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-6 centered-form">
+            <form class="form" ng-submit="$ctrl.submitTicket()">
+                <div class="form-group">
+                    <label>Query Title</label>
+                    <input type="text" class="form-control" name="username" ng-model="$ctrl.queryForm.qTitle" required>
+                </div>
+                <div class="form-group">
+                    <label>Query Description</label>
+                    <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.queryForm.qDescription"></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disabled">Submit Query</button>
+                    <a class="btn btn-primary" ng-disabled="$ctrl.disabled" href="/#!/user/dashboard">Back to DashBoard</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

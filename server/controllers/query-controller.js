@@ -48,6 +48,17 @@ module.exports.controller = (app) => {
         });
     });
 
+    router.get('/user/:ticket_id', authenticate, (req, res)=>{
+        console.log(req.user._id);
+        console.log(req.params.ticket_id);
+        ticket.findOne({'_id' : req.params.ticket_id, '_creator.id' : req.user._id}).populate('messages')
+            .then((ticket)=>{
+                res.send({ticket});
+            }, (e) => {
+                res.status(400).send(e);
+            });
+    });
+
     //route to edit the query
     router.put('/user/edit-query', authenticate, (req, res)=>{
         let body = _.pick(req.body, ['ticket_id', 'qTitle', 'qDescription']);

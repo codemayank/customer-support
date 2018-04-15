@@ -21,6 +21,7 @@
     "jquery": "^3.3.1",
     "popper.js": "^1.14.3",
     "angular-route": "^1.6.9",
-    "angular-ui-notification": "^0.3.6"
+    "angular-ui-notification": "^0.3.6",
+    "angular-css": "^1.0.8"
   }
 }

@@ -1,0 +1,26 @@
+<div class="wrapper">
+    <div class="head">
+        <div class="card">
+            <h5 class="card-header">{{$ctrl.ticket.qTitle}}</h5>
+            <div class="card-body">
+                <p class="card-text">{{$ctrl.ticket.qDescription | limitTo : $ctrl.textLimit}}
+                    <a style="cursor: pointer;" ng-show="$ctrl.textLimit === 100"
+                        ng-click="$ctrl.textLimit = $ctrl.ticket.qDescription.length">..Show More</a>
+                    <a style="cursor: pointer;" ng-show="$ctrl.textLimit > 100" ng-click="$ctrl.textLimit = 100">..Show less</a>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+    <div class="messages">Messages Box</div>
+    <div class="textbox">
+        <form class="form" ng-submit="$ctrl.submitMessage()">
+            <div class="form-group">
+                <label>Reply</label>
+                <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.messageForm.messageBody"></textarea>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disabled">Submit Message</button>
+            </div>
+        </form>
+    </div>
+</div>
