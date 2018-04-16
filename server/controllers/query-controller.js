@@ -62,49 +62,55 @@ module.exports.controller = (app) => {
     //route to edit the query
     router.put('/user/edit-query', authenticate, (req, res)=>{
         let body = _.pick(req.body, ['ticket_id', 'qTitle', 'qDescription']);
-        ticket.findOneAndUpdate({
-            '_creator.id' : req.user._id,
-            '_id' : body.ticket_id
-        }, {'qTitle' : body.qTitle, 'qDescription' : body.qDescription}, {new : true}, (err, query)=>{
-            if(err){
-                console.log('error in saving the edited query.')
-                res.status(400).send(err)
-            }
-            console.log('sending edited query.');
-            console.log(query);
-            res.send(query);
-            queryEventEmitter.emit('queryAction', {ticket_id : req.body.ticket_id, db : user.Admin, action : "edited"})
-        })
+        if(body.ticket_id && body.qTitle && body.qDescription){
+            ticket.findOneAndUpdate({
+                '_creator.id' : req.user._id,
+                '_id' : body.ticket_id
+            }, {'qTitle' : body.qTitle, 'qDescription' : body.qDescription}, {new : true}, (err, query)=>{
+                if(err){
+                    console.log('error in saving the edited query.')
+                    res.status(400).send(err)
+                }
+                console.log('sending edited query.');
+                console.log(query);
+                res.send(query);
+                queryEventEmitter.emit('queryAction', {ticket_id : req.body.ticket_id, db : user.Admin, action : "edited"})
+            })
+        }else{
+            res.send('Not sufficent data was sent');
+        }
+
     })
 
     //route to delete the query
-    router.delete('/user/delete-query', authenticate, (req, res) =>{
+    router.delete('/user/delete-query/:queryId', authenticate, (req, res) =>{
+        console.log('Delete ticket--->', req.params.queryId);
         ticket.findOneAndRemove({
             '_creator.id' : req.user._id,
-            '_id' : req.body.ticket_id
+            '_id' : req.params.queryId
         }, (err)=>{
             if(err){
                 res.status(400).send(err);
             }else{
-                queryEventEmitter.emit('queryAction', {ticket_id : req.body.ticket_id, db : user.Admin, action : "deleted"})
+                queryEventEmitter.emit('queryAction', {ticket_id : req.params.queryId, db : user.Admin, action : "deleted"})
                 res.send('The query has been deleted.');
             }
         })
     })
 
     //route to mark the query as resolved from user end.
-    router.put('/user/mark-resolved', authenticate, (req, res)=>{
+    router.put('/user/mark-resolved/:queryId', authenticate, (req, res)=>{
         ticket.findOneAndUpdate({
             '_creator.id' : req.user._id,
-            '_id' : req.body.ticket_id
+            '_id' : req.params.queryId
         }, {'resolved' : true},{new :true} ,(err, query)=>{
             if(err){
                 res.status(400).send('unable to resolve query.')
             }if(!query){
                 res.send('could not resolve query as you do not own this.')
             }else{
-                res.send('Your query has been marked as resolved');
-                queryEventEmitter.emit('queryAction', {ticket_id : req.body.ticket_id, db : user.Admin, action : 'Marked Resolved'});
+                res.send(query);
+                queryEventEmitter.emit('queryAction', {ticket_id : req.params.queryId, db : user.Admin, action : 'Marked Resolved'});
             }
             //send e-mail to the admins that has been corresponding with this guy that the query has been marked as resolved.
         })

@@ -22,6 +22,7 @@
     "popper.js": "^1.14.3",
     "angular-route": "^1.6.9",
     "angular-ui-notification": "^0.3.6",
-    "angular-css": "^1.0.8"
+    "angular-css": "^1.0.8",
+    "semantic": "semantic-ui#^2.3.1"
   }
 }

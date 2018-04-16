@@ -7,7 +7,8 @@
                     <a style="cursor: pointer;" ng-show="$ctrl.textLimit === 100"
                         ng-click="$ctrl.textLimit = $ctrl.ticket.qDescription.length">..Show More</a>
                     <a style="cursor: pointer;" ng-show="$ctrl.textLimit > 100" ng-click="$ctrl.textLimit = 100">..Show less</a>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                    <a class="ui positive right labeled icon button" style="cursor: pointer;" href="/#!/user/{{$ctrl.ticket._id}}/edit-ticket">Edit-ticket</a>
+                    <a class="ui positive right labeled icon button" style="cursor: pointer;" ng-click="$ctrl.markResolved()">Mark-resolved</a>
             </div>
         </div>
     </div>

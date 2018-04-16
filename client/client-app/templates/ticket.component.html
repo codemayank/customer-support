@@ -1,0 +1,16 @@
+<form ng-submit="$ctrl.submitTicket()" class="ui form">
+    <div class="field">
+        <label>Query Title</label>
+        <textarea rows="2" ng-model="$ctrl.queryForm.qTitle" required></textarea>
+    </div>
+    <div class="field">
+        <label>Text</label>
+        <textarea ng-model="$ctrl.queryForm.qDescription" required></textarea>
+    </div>
+    <div class="actions">
+        <button type="submit" class="ui positive right labeled icon button" ng-disabled="$ctrl.disabled">Submit Query</button>
+    </div>
+</form>
+<div class="actions">
+    <button ng-click="$ctrl.deleteTicket()" ng-show="$ctrl.edit" class="ui positive right labeled icon button" ng-disabled="$ctrl.disabled">Delete Query</button>
+</div>

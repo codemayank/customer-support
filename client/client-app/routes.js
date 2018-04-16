@@ -30,13 +30,20 @@
                 })
                 .when('/user/create-ticket',{
                     template: '<create-ticket></create-ticket>',
+                    access: {
+                        restricted : true,
+                        role : 'userAuth'
+                    }
+                })
+                .when('/user/show/:query_id', {
+                    template : '<query-detail></query-detail>',
                     access : {
                         restricted : true,
                         role : 'userAuth'
                     }
                 })
-                .when('/user/:query_id', {
-                    template : '<query-detail></query-detail>',
+                .when('/user/:query_id/edit-ticket', {
+                    template : '<edit-query></edit-query>',
                     access : {
                         restricted : true,
                         role : 'userAuth'
