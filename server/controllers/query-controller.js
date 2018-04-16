@@ -130,11 +130,27 @@ module.exports.controller = (app) => {
         }
     })
 
+    router.get('/admin/:ticket_id', authenticate, (req, res)=>{
+        console.log(req.user._id);
+        console.log(req.params.ticket_id);
+        if(req.user.tokens[0].access === "adminAuth"){
+            ticket.findOne({'_id' : req.params.ticket_id}).populate('messages')
+            .then((ticket)=>{
+                res.send({ticket});
+            }, (e) => {
+                res.status(400).send(e);
+            });
+        }else{
+            res.status(400).send(e);
+        }
+
+    });
+
     //route to mark the qury as closed by the admin.
-    router.put('/admin/close-query', authenticate, (req, res)=>{
+    router.put('/admin/close-query/:query_id', authenticate, (req, res)=>{
         console.log(req.body);
         if(req.user.tokens[0].access === "adminAuth"){
-            ticket.findOneAndUpdate({'_id' : req.body.ticket_id, 'resolved' : true}, {'status' : 'Closed'}, (err, ticket)=>{
+            ticket.findOneAndUpdate({'_id' : req.params.query_id, 'resolved' : true}, {'status' : 'Closed'}, (err, ticket)=>{
                 if(err){
                     res.status(400).send(err);
                 }else{

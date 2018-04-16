@@ -1,4 +1,14 @@
-<p>Admin-dashboard</p>
-<p>{{$ctrl.welcomeMessage}}</p>
-<p>{{$ctrl.username}}</p>
+<p>{{$ctrl.dashboard}}</p>
 <button class="btn btn-danger" ng-click="$ctrl.logout()">Logout</button>
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-sm-10 col-md-6">
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="query in $ctrl.queryList">
+                    <a href="/#!/admin/show/{{query._id}}">{{query.qTitle}}-{{query._creator.username}}</a>
+                    <span ng-class="$ctrl.checkResolved(query.resolved)">{{query.resolved ? "Resolved" : "Pending"}}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

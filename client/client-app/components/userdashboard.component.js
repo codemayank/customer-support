@@ -7,7 +7,8 @@
                 var vm = this;
                 //transfer this to a service.
                 vm.$onInit = function () {
-                    queryService.getQueryList()
+                    var url = 'query/user/show-queries'
+                    queryService.getQueryList(url)
                         .then(function(response){
                             vm.queryList = response.data.tickets
                         }).catch(function(error){
@@ -109,48 +110,4 @@
 
             }
         })
-        .component('queryDetail', {
-            css : './client-app/templates/styles/user-detail.css',
-            templateUrl: './client-app/templates/query-detail.component.html',
-            controller: function ($location, $http, $q, $routeParams, queryService) {
-                var vm = this;
-                vm.textLimit = 100;
-                vm.$onInit = function () {
-                    console.log($routeParams);
-                    queryService.getQuery($routeParams.query_id)
-                        .then(function(response){
-                            console.log(response.data);
-                            vm.ticket = response.data.ticket;
-                        }).catch(function(error){
-                            console.log(error);
-                        })
-                }
-                vm.submitMessage = function(){
-                    var url = '/query/user/submit-reply';
-                    var message = {
-                        ticket_id : vm.ticket._id,
-                        message : {
-                            messageBody : vm.messageForm.messageBody
-                        }
-                    }
-                    queryService.submitData(url, message).then(function (response) {
-                        console.log(response);
-                        $location.path('/user/dashboard')
-                    }).catch(function (error) {
-                        console.log(error);
-                    })
-                }
-
-                vm.markResolved = function(){
-                    var url = '/query/user/mark-resolved/' + vm.ticket._id;
-                    queryService.submitData(url, 'PUT').then(function(response){
-                        console.log(response);
-                    }).catch(function(response){
-                        console.log(error);
-                    })
-                }
-            }
-
-        })
-
 })();

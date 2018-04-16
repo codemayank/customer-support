@@ -7,16 +7,15 @@
         return {
             getQueryList: getQueryList,
             getQuery: getQuery,
-            submitData: submitData,
-            deleteQuery : deleteQuery
+            submitData: submitData
         }
 
-        function getQueryList() {
+        function getQueryList(url) {
             console.log('firing get query list')
             var deferred = $q.defer();
             $http({
                 method: 'GET',
-                url: 'query/user/show-queries',
+                url: url,
                 headers: {
                     'x-auth': window.localStorage.authToken,
                     'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
@@ -50,11 +49,11 @@
             return deferred.promise;
         }
 
-        function getQuery(query_id) {
+        function getQuery(url) {
             var deferred = $q.defer();
             $http({
                 method: 'GET',
-                url: '/query/user/' + query_id,
+                url: url,
                 headers: {
                     'x-auth': window.localStorage.authToken,
                     'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
@@ -67,29 +66,6 @@
                 deferred.reject(error)
             })
             return deferred.promise;
-        }
-
-        function deleteQuery(input){
-            console.log(input);
-            var deferred = $q.defer();
-            $http({
-                method: 'DELETE',
-                url: '/query/user/delete-query/' + input,
-                headers:{
-                    'x-auth': window.localStorage.authToken,
-                    'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
-                }
-            }).then(function(response){
-                deferred.resolve(response);
-            }).catch(function(error){
-                deferred.reject(error);
-            })
-            return deferred.promise;
-        }
-
-        function markResolved(input){
-            console.log(input);
-            var deferred
         }
     }
 })();

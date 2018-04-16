@@ -23,7 +23,7 @@ module.exports.controller = (app) =>{
 
     //route for admin registration
     router.post('/admin-registration', (req, res)=>{
-        let body = _.pick(req.body,['username', 'email', 'password', 'admin_id', 'phoneNumber', 'userType']);
+        let body = _.pick(req.body,['username', 'email', 'password', 'admin_id', 'phoneNumber']);
         let newAdmin = new user.Admin(body);
         newAdmin.save().then(()=>{
             return newAdmin.generateAuthToken('adminAuth');
@@ -61,7 +61,7 @@ module.exports.controller = (app) =>{
     })
 
     //route to logout the user
-    router.post('/user-logout', authenticate, (req, res)=>{
+    router.delete('/user-logout', authenticate, (req, res)=>{
         req.user.removeToken(req.token).then(()=>{
             res.status(200).send();
         }, ()=>{
@@ -88,7 +88,7 @@ module.exports.controller = (app) =>{
             userType = user.Admin
         }
         userType.changePassword(req.body.token, req.body.newPassword).then(()=>{
-            res.status(200).send()            
+            res.status(200).send('Password Changed Successfully. You Can Now Login with the new password.');
         }).catch((e)=>{
             res.status(500).send(e)
         })

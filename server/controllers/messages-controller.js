@@ -11,29 +11,29 @@ const express = require('express'),
 
 module.exports.controller = (app) => {
     //route to submit replies to the admins answers
-    router.post('/submit-message', authenticate, (req, res) => {
-        let body = _.pick(req.body, ['ticket_id', "message"]);
-        req.body.message.from = { id : req.user.id, username : req.user.username}
-        ticket.findOne({'_id' : req.body.ticket_id}, (err, ticket) => {
+    router.post('/submit-message/:ticket_id', authenticate, (req, res) => {
+        // console.log(req.body);
+        let newMessage = req.body;
+        newMessage.from = { id : req.user.id, username : req.user.username}
+        // console.log(req.body);
+        ticket.findOne({'_id' : req.params.ticket_id}).populate('messages').exec((err, ticket) => {
+            // console.log('printing ticket', ticket);
             if (err) {
-                console.log('submit message : ticket find error')
+                // console.log('submit message : ticket find error')
                 res.send(err);
             }if(!ticket){
                 res.send('there was an error in retreiving the ticket at this moment.')
             } else {
 
                 if(ticket._creator.id == req.user.id || req.user.tokens[0].access === 'adminAuth'){
-                    message.create(req.body.message, (err, message) => {
+                    message.create(newMessage, (err, message) => {
                         if (err) {
-                            console.log('submit message : create message error')
+                            // console.log('submit message : create message error')
                             res.send(err);
                         } else {
-                            message.from.id = req.user._id;
-                            message.from.username = req.user.username;
-                            message.save();
                             ticket.messages.push(message);
                             ticket.save()
-                            res.send('message successfully added');
+                            res.send({ticket});
                             //fire event to send e-mail to the user that they have received the response from an admin.
                             let userType = user.Admin
                             let queryValue = {}
@@ -55,22 +55,29 @@ module.exports.controller = (app) => {
     })
 
     //edit message route
-    router.put('/edit-message', authenticate, (req, res) => {
-        message.findByIdAndUpdate({'_id' : req.body.id, 'from.id' : req.user.id}, {'text' : req.body.text}, (err, updatedMessage) => {
+    router.put('/edit-message/:query_id/:message_id', authenticate, (req, res) => {
+        console.log('user_id', req.user._id)
+        message.findByIdAndUpdate({ '_id': req.params.message_id, 'from.id': req.user.id }, { 'text': req.body.text }, (err, updatedMessage) => {
             if (err) {
-                console.log('edit-message: edit message error');
+                // // console.log('edit-message: edit message error');
                 res.send(err)
             } else {
-                res.send('your message has been successfully edited')
+                ticket.findOne({ '_id': req.params.query_id }).populate('messages').exec((err, ticket) => {
+                    if (err) {
+                        // console.log('could not find ticket');
+                    } else {
+                        res.send({ticket});
+                    }
+                })
             }
-        });
+        })
     });
 
     //delete message route
-    router.delete('/delete-message', authenticate, (req, res) => {
-        message.findByIdAndRemove({'_id' : req.body.id, 'from.id' : req.user.id}, (err) => {
+    router.delete('/delete-message/:message_id', authenticate, (req, res) => {
+        message.findByIdAndRemove({'_id' : req.params.message_id, 'from.id' : req.user.id}, (err) => {
             if (err) {
-                console.log("message delete error");
+                // console.log("message delete error");
                 res.send("there was an error in deleting the message at this time");
                 //fire event to let the user know that their message was not deleted. 
             } else {

@@ -92,8 +92,8 @@ let UserSchema = function (add) {
       };
 
       Schema.statics.createResetPasswordToken = function (email, host) {
-            console.log("email -->",email);
-            console.log("host-->", host);
+            // console.log("email -->",email);
+            // console.log("host-->", host);
             let User = this;
             let buf = crypto.randomBytes(20);
             let token = buf.toString('hex');
@@ -101,7 +101,7 @@ let UserSchema = function (add) {
                         'email': email
                   })
                   .then((user) => {
-                        console.log('User-->',user)
+                        // console.log('User-->',user)
                         if (!User) {
                               return Promise.reject(`no User with email-id ${email} exists`);
                         }
@@ -112,7 +112,7 @@ let UserSchema = function (add) {
                         })
                   })
                   .then((user) => {
-                        console.log('token & User -->', token, user);
+                        // console.log('token & User -->', token, user);
                         let smtpTransport = nodemailer.createTransport({
                               service: 'SendGrid',
                               auth: {
@@ -131,7 +131,7 @@ let UserSchema = function (add) {
                         }
         
                         return smtpTransport.sendMail(mailOptions).then(() => {
-                               console.log('mail has been sent')
+                              //  console.log('mail has been sent')
                               return {
                                     message: 'email sent.'
                               }
@@ -176,7 +176,7 @@ let UserSchema = function (add) {
                         text : 'Your password has been changed successfully'
                   }
                   return smtpTransport.sendMail(mailOptions).then(()=>{
-                        console.log('e-mail has been sent successfully.')
+                        // console.log('e-mail has been sent successfully.')
                         return {message : 'password successfully changed.'}
                   })
             })
@@ -188,7 +188,7 @@ let UserSchema = function (add) {
 
             try {
                   decoded = jwt.verify(token, jwtSecret);
-                  console.log(decoded);
+                  // console.log(decoded);
             } catch (e) {
                   return Promise.reject();
             }
@@ -209,7 +209,7 @@ let UserSchema = function (add) {
                         admin_id
                   }]
             }).then((user) => {
-                  console.log(user)
+                  // console.log(user)
                   if (!user) {
                         let message = "user Not found.";
                         return Promise.reject(message);
@@ -218,7 +218,7 @@ let UserSchema = function (add) {
                         bcrypt.compare(password, user.password, (err, res) => {
                               if (res) {
                                     resolve(user);
-                                    console.log('user resolved i.e. password matches');
+                                    // console.log('user resolved i.e. password matches');
                               } else {
                                     reject();
                               }

@@ -19,9 +19,6 @@
       grid-column: col-start / span 12;
   }
 
-  div{
-      border : 1px solid black;
-  }
 
   @media (min-width: 800px) {
     .wrapper {

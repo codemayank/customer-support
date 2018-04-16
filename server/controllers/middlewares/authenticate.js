@@ -7,13 +7,13 @@ let authenticate = (req, res, next) => {
     let token = req.header('x-auth');
     let type = req.header('x-userType');
     let userType = user.User;
-    console.log('user-Type -->',type);
+    // console.log('user-Type -->',type);
     if(type == 'Admin'){
         userType = user.Admin
     }
 
     userType.findByToken(token).then((user)=>{
-        console.log('then statement -->')
+        // console.log('then statement -->')
         if(!user){
             return Promise.reject();
         }
@@ -21,7 +21,7 @@ let authenticate = (req, res, next) => {
         req.token = token;
         next() 
     }).catch((e) => {
-        console.log('could not find user by token.')
+        // console.log('could not find user by token.')
         res.status(401).send();
     })
 }

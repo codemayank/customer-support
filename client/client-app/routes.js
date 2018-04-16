@@ -9,14 +9,8 @@
                         restricted: false
                     }
                 })
-                .when('/user/login', {
-                    template: '<user-login></user-login',
-                    access: {
-                        restricted: false
-                    }
-                })
-                .when('/user/register', {
-                    template: '<user-register></user-register>',
+                .when('/signin/:userType/:action', {
+                    template: '<sign-in></sign-in>',
                     access: {
                         restricted: false
                     }
@@ -49,22 +43,17 @@
                         role : 'userAuth'
                     }
                 })
-                .when('/admin/login', {
-                    template: '<admin-login></admin-login>',
-                    access: {
-                        restricted: false
-                    }
-                })
-                .when('/admin/register', {
-                    template: '<admin-register></admin-register>',
-                    access: {
-                        restricted: false
-                    }
-                })
                 .when('/admin/dashboard', {
                     template: '<admin-dashboard></admin-dashboard>',
                     access: {
                         restricted: true,
+                        role: 'adminAuth'
+                    }
+                })
+                .when('/admin/show/:query_id', {
+                    template: '<query-detail></query-detail>',
+                    access:{
+                        restricted : true,
                         role: 'adminAuth'
                     }
                 })

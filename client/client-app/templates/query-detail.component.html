@@ -7,12 +7,25 @@
                     <a style="cursor: pointer;" ng-show="$ctrl.textLimit === 100"
                         ng-click="$ctrl.textLimit = $ctrl.ticket.qDescription.length">..Show More</a>
                     <a style="cursor: pointer;" ng-show="$ctrl.textLimit > 100" ng-click="$ctrl.textLimit = 100">..Show less</a>
-                    <a class="ui positive right labeled icon button" style="cursor: pointer;" href="/#!/user/{{$ctrl.ticket._id}}/edit-ticket">Edit-ticket</a>
-                    <a class="ui positive right labeled icon button" style="cursor: pointer;" ng-click="$ctrl.markResolved()">Mark-resolved</a>
+                    <a class="ui positive right labeled icon button" style="cursor: pointer;" ng-if = "!$ctrl.admin" href="/#!/user/{{$ctrl.ticket._id}}/edit-ticket">Edit-ticket</a>
+                    <a class="ui positive right labeled icon button" style="cursor: pointer;" ng-if = "!$ctrl.admin" ng-click="$ctrl.markResolved()">Mark-resolved</a>
+                    <a class="ui positive right labeled icon button" style="cursor: pointer;" ng-if = "$ctrl.admin && $ctrl.ticket.resolved" ng-click="$ctrl.closeQuery()">Mark-resolved</a>
             </div>
         </div>
     </div>
-    <div class="messages">Messages Box</div>
+    <div class="messages">
+        <div class="ui middle aligned divided list">
+            <div ng-repeat="message in $ctrl.ticket.messages" class="item">
+                <div class="right floated content">
+                    <div ng-click="$ctrl.selectMessage(message)" class="ui button">Edit</div>
+                    <div ng-click="$ctrl.deleteMessage(message)" class="ui button">Delete</div>
+                </div>
+                <div class="content">
+                    {{message.text}}
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="textbox">
         <form class="form" ng-submit="$ctrl.submitMessage()">
             <div class="form-group">
@@ -25,3 +38,6 @@
         </form>
     </div>
 </div>
+
+
+

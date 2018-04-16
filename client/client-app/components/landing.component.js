@@ -8,7 +8,6 @@
             controller : function landingController(){
                 let vm = this;
                 vm.welcomeMessage = 'Welcome to the customer support app.'
-                console.log(vm.hello);
             }
         })
 })()
