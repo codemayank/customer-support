@@ -92,7 +92,7 @@
                     var url = '/query/user/mark-resolved/' + vm.ticket._id;
                     queryService.submitData(url, 'PUT').then(function (response) {
                         console.log(response);
-                        vm.ticket = response.data;
+                        vm.ticket.resolved = true;
                     }).catch(function (response) {
                         console.log(error);
                         vm.disableMarkResolved = false;
@@ -104,6 +104,7 @@
                     var url = '/query/admin/close-query/' + vm.ticket._id;
                     queryService.submitData(url, 'PUT').then(function(response){
                         console.log(response);
+                        vm.ticket.status = 'Closed';
                     }).catch(function(response){
                         console.log(error);
                         vm.disableCloseQuery = false;
@@ -125,11 +126,20 @@
 
                 vm.checkResolved = function (resolved) {
                     if (resolved) {
-                        console.log(resolved)
                         return 'badge badge-success badge-pill'
                     } else {
                         return 'badge badge-danger badge-pill'
                     }
+                }
+
+                vm.checkStatus = function(status){
+                    if(status === 'Closed'){
+                        return 'badge badge-success badge-pill'
+                    }else{
+                        return 'badge badge-danger badge-pill'
+
+                    }
+
                 }
 
 

@@ -19,7 +19,6 @@
                 }
 
                 vm.checkResolved = function (resolved) {
-                    console.log(resolved)
                     if (resolved) {
                         console.log(resolved)
                         return 'badge badge-success badge-pill'

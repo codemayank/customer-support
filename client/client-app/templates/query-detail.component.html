@@ -1,20 +1,35 @@
 <div class="container">
-    <h5>{{$ctrl.ticket.qTitle}}</h5>
-    <div>
-        <p>{{$ctrl.ticket.qDescription}}
-            <small class="pull-right" ng-class="$ctrl.checkResolved($ctrl.ticket.resolved)">{{$ctrl.ticket.resolved ? "Resolved" : "Pending";}}</small>
-        </p>
+    <div class="query">
+        <h4>{{$ctrl.ticket.qTitle}}</h4>
+        <hr>
         <div>
-            <a class="links"  ng-if="!$ctrl.admin" href="/#!/user/{{$ctrl.ticket._id}}/edit-ticket">Edit-Query</a>
-            <a class="links"  ng-if="!$ctrl.admin && !$ctrl.ticket.resolved" href="/#!/user/show/{{$ctrl.ticket._id}}"
-                ng-click="$ctrl.markResolved()">Mark-resolved</a>
-            <a class="links"  ng-if="!$ctrl.admin && !$ctrl.ticket.status != 'Closed'" href="/#!/user/dashboard"
-                ng-click="$ctrl.deleteTicket()" ng-disabled="$ctrl.disableDeleteTicket">Delete-Query</a>
-            <a class="links"  ng-if="$ctrl.admin && $ctrl.ticket.resolved" ng-click="$ctrl.closeQuery()"
-                ng-disabled="$ctrl.disableCloseQuery">Close Query</a>
-            <a class="links"  data-toggle="collapse" data-target="#reply" ng-click="$ctrl.newMessage()">Submit Reply</a>
+            <p>{{$ctrl.ticket.qDescription}}
+            </p>
+            <div>
+                <small>Created by : {{$ctrl.ticket._creator.username}}</small>
+            </div>
+            <div>
+                <small>Created on : {{$ctrl.ticket.createdAt | amCalendar:referenceTime:formats}}</small>
+            </div>
+            <div>
+                <small>Resolution</small> : <small class="pull-right" ng-class="$ctrl.checkResolved($ctrl.ticket.resolved)">{{$ctrl.ticket.resolved ? "Resolved" : "Pending";}}</small>
+            </div>
+            <div ng-if="$ctrl.admin">
+                <small>Status</small> : <small class="pull-right" ng-class="$ctrl.checkStatus($ctrl.ticket.status)">{{$ctrl.ticket.status === "Closed" ? "Closed" : "Open";}}</small>
+            </div>
+            <div class="query-buttons">
+                <a class="btn btn-sm btn-outline-primary" ng-if="!$ctrl.admin" href="/#!/user/{{$ctrl.ticket._id}}/edit-ticket">Edit-Query</a>
+                <a class="btn btn-sm btn-outline-success" ng-if="!$ctrl.admin && !$ctrl.ticket.resolved" href="/#!/user/show/{{$ctrl.ticket._id}}"
+                    ng-click="$ctrl.markResolved()">Mark-resolved</a>
+                <a class="btn btn-sm btn-outline-danger" ng-if="!$ctrl.admin && !$ctrl.ticket.status != 'Closed'" href="/#!/user/dashboard"
+                    ng-click="$ctrl.deleteTicket()" ng-disabled="$ctrl.disableDeleteTicket">Delete-Query</a>
+                <button class="btn btn-sm btn-outline-success" ng-if="$ctrl.admin && $ctrl.ticket.resolved" ng-click="$ctrl.closeQuery()">Close Query</button>
+                <button class="btn btn-sm btn-outline-info" data-toggle="collapse" data-target="#reply" ng-click="$ctrl.newMessage()">Submit Reply</button>
+            </div>
         </div>
+
     </div>
+
     <hr>
     <div>
         <form id="reply" class="form collapse" ng-submit="$ctrl.submitMessage()">
@@ -23,14 +38,13 @@
                 <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.messageForm.messageBody"></textarea>
             </div>
             <div>
-                <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disableSubmit">Submit Message</button>
+                <button type="submit" class="btn btn-sm btn-primary" ng-disabled="$ctrl.disableSubmit">Submit Message</button>
             </div>
         </form>
     </div>
-    <hr>
     <div class="container">
         <div class="list-group mt-4 mb-4">
-            <div ng-repeat="message in $ctrl.ticket.messages | orderBy : '-createdAt'" class="list-group-item list-group-item-action flex-column">
+            <div ng-repeat="message in $ctrl.ticket.messages | orderBy : '-createdAt'" class="list-group-item flex-column message">
                 <div class="right">
                     <div class="d-flex w-100">
                         <h6 class="mb-1">{{message.from.username}}</h6>
@@ -45,17 +59,17 @@
                     </div>
                 </div>
 
-                <a class="links" ng-if="message.from.username === $ctrl.username" ng-click="$ctrl.selectMessage(message)" 
-                    data-toggle="collapse" data-target="#edit">Edit</a>
-                <a class="links" ng-if="message.from.username === $ctrl.username" ng-click="$ctrl.deleteMessage(message)">Delete</a>
+                <button class="btn btn-sm btn-outline-primary" ng-if="message.from.username === $ctrl.username" ng-click="$ctrl.selectMessage(message)"
+                    data-toggle="collapse" data-target="#edit">Edit</button>
+                <button class="btn btn-sm btn-outline-primary" ng-if="message.from.username === $ctrl.username" ng-click="$ctrl.deleteMessage(message)">Delete</button>
                 <div>
                     <form ng-if="$ctrl.selectedMessage === message" id="edit" class="form collapse" ng-submit="$ctrl.submitMessage()">
-                        <div class="form-group">
+                        <div class="form-group mt-3">
                             <label>Edit Message</label>
                             <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.messageEditForm.messageBody"></textarea>
                         </div>
                         <div>
-                            <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disableSubmit">Submit Message</button>
+                            <button type="submit" class="btn btn-sm btn-primary" ng-disabled="$ctrl.disableSubmit">Submit Message</button>
                         </div>
                     </form>
                 </div>

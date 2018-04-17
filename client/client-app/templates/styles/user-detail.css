@@ -16,5 +16,17 @@ body {
 .links{
     cursor: pointer;
     color : darkblue;
-    font-size: 16px;
+    font-size: 12px;
+}
+
+.query{
+    padding-top: 50px;
+}
+
+.message{
+    background: whitesmoke;
+}
+
+.query-buttons{
+    padding-top: 2px;
 }

@@ -109,7 +109,7 @@ module.exports.controller = (app) => {
             }if(!query){
                 res.send('could not resolve query as you do not own this.')
             }else{
-                res.send(query);
+                res.send('query marked resolved');
                 queryEventEmitter.emit('queryAction', {ticket_id : req.params.queryId, db : user.Admin, action : 'Marked Resolved'});
             }
             //send e-mail to the admins that has been corresponding with this guy that the query has been marked as resolved.
