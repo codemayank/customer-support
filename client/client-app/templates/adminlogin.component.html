@@ -18,8 +18,11 @@
                     </div>
                     <div>
                         <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disabled">Login</button>
+                        <a ng-if="!$ctrl.admin" href="/#!/signin/user/forgotpassword" class="btn btn-primary" ng-disabled="$ctrl.disabled">Forgot Password</a>
+                        <a ng-if="$ctrl.admin" href="/#!/signin/admin/forgotpassword" class="btn btn-primary" ng-disabled="$ctrl.disabled">Forgot Password</a>
                     </div>
                 </form>
+                
             </div>
         </div>
     </div>

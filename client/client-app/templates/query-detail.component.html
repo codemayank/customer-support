@@ -1,4 +1,31 @@
-<div class="wrapper">
+<div class="container">
+    <h5>{{$ctrl.ticket.qTitle}}</h5>
+    <div>
+        <p>{{$ctrl.ticket.qDescription}} <small class="pull-right" ng-class="$ctrl.checkResolved($ctrl.ticket.resolved)">{{$ctrl.ticket.resolved ? "Resolved" : "Pending"}}</small></p>
+        <div>
+            <a class="btn btn-small btn-primary" style="cursor: pointer;" ng-if="!$ctrl.admin" href="/#!/user/{{$ctrl.ticket._id}}/edit-ticket">Edit-ticket</a>
+            <a class="btn btn-small btn-primary" style="cursor: pointer;" ng-if="!$ctrl.admin" href="/#!/user/show/{{$ctrl.ticket._id}}" ng-click="$ctrl.markResolved()">Mark-resolved</a>
+            <a class="btn btn-small btn-primary" style="cursor: pointer;" ng-if="!$ctrl.admin" href="/#!/user/dashboard" ng-click="$ctrl.deleteTicket()">Delete-Query</a>
+            <a class="btn btn-small btn-primary" style="cursor: pointer;" ng-if="$ctrl.admin && $ctrl.ticket.resolved" ng-click="$ctrl.closeQuery()">Mark-resolved</a>
+        </div>
+    </div>
+    <hr>
+    <div class="container">
+        <div class="list-group mt-4 mb-4">
+            <div ng-repeat="message in $ctrl.ticket.messages | orderBy : '-createdAt'" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{message.from}} : {{message.text}}</h6>
+                    <small>{{message.createdAt | amCalendar:referenceTime:formats}}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- <div class="wrapper">
     <div class="head">
         <div class="card">
             <h5 class="card-header">{{$ctrl.ticket.qTitle}}</h5>
@@ -37,7 +64,7 @@
             </div>
         </form>
     </div>
-</div>
+</div> -->
 
 
 

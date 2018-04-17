@@ -15,6 +15,7 @@ module.exports.controller = (app) => {
         // console.log(req.body);
         let newMessage = req.body;
         newMessage.from = { id : req.user.id, username : req.user.username}
+        newMessage.createdAt = new Date().getTime();
         // console.log(req.body);
         ticket.findOne({'_id' : req.params.ticket_id}).populate('messages').exec((err, ticket) => {
             // console.log('printing ticket', ticket);

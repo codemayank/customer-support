@@ -9,7 +9,7 @@
                 vm.admin = $routeParams.userType === 'admin' ? true : false;
                 vm.action = $routeParams.action;
                 vm.showLoginForm = $routeParams.action === 'login' ? true : false; 
-                vm.showRegForm = $routeParams.action === 'register' ? true : false;
+                vm.showRegForm = $routeParams.action === 'registration' ? true : false;
                 vm.forgotPassword = $routeParams.action === 'forgotpassword' ? true : false;
                 vm.resetPassword = $routeParams.action === 'resetpassword' ? true : false;
                 console.log(vm.forgotPassword, vm.resetPassword);

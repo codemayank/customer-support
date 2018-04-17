@@ -2,10 +2,12 @@
     'use strict';
     angular.module('app')
         .component('userDashboard', {
+            css : './client-app/templates/styles/userdashboard.css',
             templateUrl: './client-app/templates/userdashboard.component.html',
             controller: function ($http, $location, authService, Notification, queryService) {
                 var vm = this;
                 //transfer this to a service.
+                vm.username = window.localStorage.username;
                 vm.$onInit = function () {
                     var url = 'query/user/show-queries'
                     queryService.getQueryList(url)
@@ -44,7 +46,7 @@
         })
         .component('createTicket', {
             templateUrl : './client-app/templates/ticket.component.html',
-            controller: function ($q, $http, $location, queryService) {
+            controller: function ($location, queryService) {
                 let vm = this;
                 vm.edit = false;
 
@@ -69,7 +71,7 @@
         })
         .component('editQuery', {
             templateUrl : './client-app/templates/ticket.component.html',
-            controller : function($q, $http, $location, queryService, storageService){
+            controller : function($location, queryService, storageService){
                 let vm = this;
                 var query = storageService.storage;
                 vm.edit = true;
@@ -95,19 +97,6 @@
                         vm.queryForm = {};
                     })   
                 }
-
-                vm.deleteTicket = function(){
-                    console.log(query);
-                    var url = '/query/user/delete-query/' + query_id;
-                    queryService.submitData(url, 'DELETE', null)
-                        .then(function(response){
-                            console.log(response);
-                            $location.path('/user/dashboard');
-                        }).catch(function(error){
-                            console.log(error);
-                        })
-                }
-
             }
         })
 })();

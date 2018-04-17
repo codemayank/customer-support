@@ -3,7 +3,7 @@
 
     angular.module('app')
         .component('landing', {
-            bindings : {hello : '<'},
+            css : './client-app/templates/styles/landingpage.css',
             templateUrl : './client-app/templates/landing.component.html',
             controller : function landingController(){
                 let vm = this;

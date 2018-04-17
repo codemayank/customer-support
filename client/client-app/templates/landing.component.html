@@ -1,13 +1,46 @@
-<h3>{{$ctrl.welcomeMessage}}</h3>
-<div>
-    <a href="/#!/signin/user/login">User-Login</a>
-    <a href="/#!/signin/admin/login">Admin-Login</a>
-</div>
-<div>
-    <a href="/#!/signin/user/registration">User-Register</a>
-    <a href="/#!/signin/admin/registration">Admin-Register</a>
-</div>
-<div>
-    <a href="/#!/signin/user/forgotpassword">Forgot Password - User</a>
-    <a href="/#!/signin/admin/forgotpassword">Forgot Password - Admin</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/#!/">Customer Support</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-controls="navbarTogglerDemo02"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a href="/#!/signin/user/login">User-Login</a>
+            </li>
+            <li class="nav-item">
+                <a href="/#!/signin/admin/login">Admin-Login</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="site-wrapper">
+    <div class="site-wrapper-inner">
+        <div class="cover-container">
+
+            <div class="inner cover">
+                <h1 class="cover-heading">Customer Support</h1>
+
+                <p class="lead">A Ticket based customer support app.</p>
+
+                <p class="lead">
+                    <a class="btn btn-lg btn-info" href="/#!/signin/user/registration">Get Started as User
+                    </a>
+                    <a class="btn btn-lg btn-info" href="/#!/signin/admin/registration">Get Started as Admin
+                    </a>
+                </p>
+            </div>
+
+            <div class="mastfoot">
+                <div class="inner">
+                    <!-- Validation -->
+                    <p>© 2018 ~ Mayank
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

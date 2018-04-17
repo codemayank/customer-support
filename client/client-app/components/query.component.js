@@ -66,6 +66,7 @@
                     var url = '/query/user/mark-resolved/' + vm.ticket._id;
                     queryService.submitData(url, 'PUT').then(function (response) {
                         console.log(response);
+                        vm.ticket = response.data;
                     }).catch(function (response) {
                         console.log(error);
                     })
@@ -79,6 +80,29 @@
                         console.log(error);
                     })
                 }
+                //TODO: provide a button for this function in the view.
+                vm.deleteTicket = function(){
+                    console.log(query);
+                    var url = '/query/user/delete-query/' + vm.ticket._id;
+                    queryService.submitData(url, 'DELETE', null)
+                        .then(function(response){
+                            console.log(response);
+                            $location.path('/user/dashboard');
+                        }).catch(function(error){
+                            console.log(error);
+                        })
+                }
+
+                vm.checkResolved = function (resolved) {
+                    console.log(resolved)
+                    if (resolved) {
+                        console.log(resolved)
+                        return 'badge badge-success badge-pill'
+                    } else {
+                        return 'badge badge-danger badge-pill'
+                    }
+                }
+
             }
 
         })
