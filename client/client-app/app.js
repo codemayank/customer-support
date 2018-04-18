@@ -1,6 +1,6 @@
 (function(){
     'use strict';
 
-    const app = angular.module('app', ['ngRoute', 'ngStorage', 'ui-notification', 'angularCSS', 'angular-loading-bar', 'ngAnimate', 'angularMoment']);
+    const app = angular.module('app', ['ngRoute', 'ui-notification', 'angularCSS', 'angular-loading-bar', 'ngAnimate', 'angularMoment']);
 
 })();
