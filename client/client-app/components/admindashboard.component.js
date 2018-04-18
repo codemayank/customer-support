@@ -1,16 +1,17 @@
-(function(){
+(function () {
     'use strict';
     angular.module('app')
         .component('adminDashboard', {
-            templateUrl : './client-app/templates/admindashboard.component.html',
-            controller : function($http, $location, authService, Notification, queryService){
+            css: './client-app/templates/styles/dashboard.css',
+            templateUrl: './client-app/templates/admindashboard.component.html',
+            controller: function ($http, $location, authService, Notification, queryService) {
                 var vm = this;
                 vm.$onInit = function () {
                     var url = '/query/admin/show-queries'
                     queryService.getQueryList(url)
-                        .then(function(response){
+                        .then(function (response) {
                             vm.queryList = response.data.tickets
-                        }).catch(function(error){
+                        }).catch(function (error) {
                             console.log(error)
                         })
                 }
@@ -24,7 +25,8 @@
                         return 'badge badge-danger badge-pill'
                     }
                 }
-                vm.dashboard = 'Welcome to admin dash board.';
+
+
                 vm.username = window.localStorage.username
 
                 vm.logout = function () {
@@ -40,6 +42,15 @@
                         });
                 }
 
+                vm.checkStatus = function(status){
+                    if(status === 'Closed'){
+                        return 'badge badge-success badge-pill'
+                    }else{
+                        return 'badge badge-danger badge-pill'
+
+                    }
+                }
+
             }
-    })
+        })
 })();

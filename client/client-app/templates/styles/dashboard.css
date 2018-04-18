@@ -1,0 +1,26 @@
+
+a,
+a:focus,
+a:hover {
+  color: #fff;
+}
+
+body  {
+  background: whitesmoke;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  min-height: 100vh;
+  height: auto;
+  text-align: left;
+}
+
+.container{
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+a{
+  cursor: pointer;
+}

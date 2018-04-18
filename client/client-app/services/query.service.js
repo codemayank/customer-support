@@ -18,10 +18,9 @@
                 url: url,
                 headers: {
                     'x-auth': window.localStorage.authToken,
-                    'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
+                    'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User' //check user role to set the x-userType property of header.
                 }
             }).then(function (response) {
-                console.log(response);
                 deferred.resolve(response);
             }).catch(function (error) {
                 deferred.reject(error);
@@ -38,17 +37,17 @@
                 data: Data || null,
                 headers: {
                     'x-auth': window.localStorage.authToken,
-                    'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
+                    'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User' //check user role to set the x-userType property of header.
                 }
             }).then(function (response) {
                 deferred.resolve(response);
             }).catch(function (error) {
-                console.log(error);
                 deferred.reject(error);
             })
             return deferred.promise;
         }
 
+        //service to get query based from the server
         function getQuery(url) {
             var deferred = $q.defer();
             $http({
@@ -56,7 +55,7 @@
                 url: url,
                 headers: {
                     'x-auth': window.localStorage.authToken,
-                    'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User'
+                    'x-userType': window.localStorage.userRole === 'adminAuth' ? 'Admin' : 'User' //check user role to set the x-userType property of header.
                 }
             }).then(function (response) {
                 deferred.resolve(response);

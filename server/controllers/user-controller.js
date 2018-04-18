@@ -11,7 +11,6 @@ module.exports.controller = (app) =>{
     router.post('/user-registration', (req, res) => {
         let body = _.pick(req.body, ['username', 'email', 'password', 'phoneNumber'])
         let newUser = new user.User(body);
-        console.log(newUser);
         newUser.save().then(() =>{
             return newUser.generateAuthToken('userAuth');
         }).then((token)=>{
@@ -82,6 +81,7 @@ module.exports.controller = (app) =>{
         })
     })
 
+    //reset password route
     router.post('/reset-password', (req, res)=>{
         let userType = user.User;
         if(req.header('x-userType') == 'Admin'){
@@ -95,6 +95,7 @@ module.exports.controller = (app) =>{
 
     })
 
+    //route to get user status
     router.get('/status', authenticate, (req, res)=>{
         res.status(200).send();
     })

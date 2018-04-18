@@ -1,5 +1,7 @@
 const mongoose = require('mongoose')
 
+
+//specify ticket schema
 let ticketSchema = new mongoose.Schema({
     email : {
         type:String,

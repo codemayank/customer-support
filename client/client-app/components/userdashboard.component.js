@@ -1,13 +1,15 @@
 (function () {
     'use strict';
     angular.module('app')
+        //user dashboard component.  
         .component('userDashboard', {
-            css : './client-app/templates/styles/userdashboard.css',
+            css : './client-app/templates/styles/dashboard.css',
             templateUrl: './client-app/templates/userdashboard.component.html',
-            controller: function ($http, $location, authService, Notification, queryService) {
+            controller: function ($location, authService, Notification, queryService) {
                 var vm = this;
-                //transfer this to a service.
+
                 vm.username = window.localStorage.username;
+                //get the list of queries when the component is initialised
                 vm.$onInit = function () {
                     var url = 'query/user/show-queries'
                     queryService.getQueryList(url)
@@ -18,22 +20,20 @@
                         })
                 }
 
+                //check if the query/ticket is resolved to set the resolution status badge in the view.
                 vm.checkResolved = function (resolved) {
                     if (resolved) {
-                        console.log(resolved)
                         return 'badge badge-success badge-pill'
                     } else {
                         return 'badge badge-danger badge-pill'
                     }
                 }
-                vm.dashboard = 'Welcome to user dash board.';
                 vm.username = window.localStorage.username
 
                 vm.logout = function () {
                     authService.logout()
                         .then(function () {
                             if (vm.username) {
-                                console.log('removing user data');
                                 window.localStorage.removeItem("x-auth");
                                 window.localStorage.removeItem("username");
                                 window.localStorage.removeItem('role');
@@ -43,53 +43,54 @@
                 }
             }
         })
+        //create query/ticket component.
         .component('createTicket', {
-            templateUrl : './client-app/templates/ticket.component.html',
+            css : './client-app/templates/styles/signinform.css',
+            templateUrl : './client-app/templates/ticketform.component.html',
             controller: function ($location, queryService) {
                 let vm = this;
-                vm.edit = false;
+                vm.edit = false; //set the view mode to send new queries.
 
                 vm.submitTicket = function () {
-                    var url = '/query/user/submit-query';                
-                    console.log('submit ticket event fired.');
-                    var ticket = {
+                    var url = '/query/user/submit-query'; //specify the url to be used in request object.                
+                    var ticket = { //specify ticket data.
                         qTitle: vm.queryForm.qTitle,
                         qDescription: vm.queryForm.qDescription
                     }
                     queryService.submitData(url, 'POST', ticket).then(function (response) {
-                        console.log(response);
                         $location.path('/user/dashboard');
                         vm.queryForm = {};
                     }).catch(function (error) {
-                        console.log(error);
                         vm.queryForm = {};
                     })
 
                 }
             }
         })
+        //edit query component
         .component('editQuery', {
-            templateUrl : './client-app/templates/ticket.component.html',
+            css : './client-app/templates/styles/signinform.css',
+            templateUrl : './client-app/templates/ticketform.component.html',
             controller : function($location, queryService, storageService){
                 let vm = this;
-                var query = storageService.storage;
-                vm.edit = true;
+                var query = storageService.storage; //get the query data from storage service.
+                vm.edit = true; //set the view mode to edit queries.
                 if(query){
                     vm.queryForm = {
                         qTitle : query.qTitle,
                         qDescription : query.qDescription
                     }    
                 }
+                //submit edited ticket.
                 vm.submitTicket = function(){
-                    var url = 'query/user/edit-query';
-                    var ticket = {
+                    var url = 'query/user/edit-query'; //specify url
+                    var ticket = { //specify ticket data
                         ticket_id : query._id, 
                         qTitle : vm.queryForm.qTitle,
                         qDescription : vm.queryForm.qDescription
-                    }
+                    } 
                     queryService.submitData(url, 'PUT', ticket).then(function(response){
-                        console.log(response);
-                        $location.path('/user/show/' + response.data._id);
+                        $location.path('/user/show/' + response.data._id); //redirect to the query view.
                         vm.queryForm = {};
                     }).catch(function(error){
                         console.log(error);

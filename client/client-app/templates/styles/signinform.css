@@ -1,0 +1,16 @@
+
+body {
+    background: whitesmoke;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    min-height: 100vh;
+    height: auto;
+    text-align: left;
+    color: black;
+}
+
+.form-container {
+    border :1px solid gainsboro;
+}

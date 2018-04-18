@@ -1,0 +1,95 @@
+<div class="container">
+    <div ng-if="$ctrl.showLoginForm" class="container">
+
+        <div class="row">
+            <div class="col-sm-12 col-md-4 col-md-offset-4">
+                    <h4>Login</h4>
+                    <hr>
+                    <form class="form" ng-submit="$ctrl.authorisation()">
+                        <div ng-if="$ctrl.admin" class="form-group">
+                            <label>Admin ID:</label>
+                            <input type="text" class="form-control" name="admin_id" ng-model="$ctrl.loginForm.admin_id" required>
+                        </div>
+                        <div ng-if="!$ctrl.admin" class="form-group">
+                            <label>Username</label>
+                            <input type="text" class="form-control" name="username" ng-model="$ctrl.loginForm.username" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" class="form-control" name="password" ng-model="$ctrl.loginForm.password" required>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disabled">Login</button>
+                            <a ng-if="!$ctrl.admin" href="/#!/signin/user/forgotpassword" class="btn btn-primary" ng-disabled="$ctrl.disabled">Forgot Password</a>
+                            <a ng-if="$ctrl.admin" href="/#!/signin/admin/forgotpassword" class="btn btn-primary" ng-disabled="$ctrl.disabled">Forgot Password</a>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- registration-template -->
+
+    <div ng-if="$ctrl.showRegForm" class="container">
+
+        <div class="row">
+            <div class="col-sm-12 col-md-4 col-md-offset-4">
+                <h3>Registration</h3>
+                <hr>
+                    <form class="form" ng-submit="$ctrl.authorisation()">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" class="form-control" name="username" ng-model="$ctrl.registerForm.username" required>
+                        </div>
+                        <div class="form-group">
+                            <label>email</label>
+                            <input type="email" class="form-control" name="email" ng-model="$ctrl.registerForm.email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" class="form-control" name="password" ng-model="$ctrl.registerForm.password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone-Number</label>
+                            <input type="number" class="form-control" name="phonenumber" ng-model="$ctrl.registerForm.phoneNumber" required>
+                        </div>
+                        <div ng-if="$ctrl.admin" class="form-group">
+                            <label>Admin ID</label>
+                            <input type="id" class="form-control" name="admin_id" ng-model="$ctrl.registerForm.admin_id" required>
+                        </div>
+                        <div>
+                            <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disabled">Register</button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- forgot password -->
+    <div ng-if="$ctrl.resetPassword || $ctrl.forgotPassword" class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-4 col-md-offset-4">
+                <h3>Forgot Password</h3>
+                <hr>
+                <form class="form" ng-submit="$ctrl.authorisation()">
+                    <div ng-if="$ctrl.forgotPassword" class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" name="email" ng-model="$ctrl.forgotPasswordForm.email" required>
+                    </div>
+                    <div ng-if="$ctrl.resetPassword">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="token" class="form-control" name="token" ng-model="$ctrl.resetPasswordForm.token" required>
+                        </div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" class="form-control" name="password" ng-model="$ctrl.resetPasswordForm.newPassword" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" ng-disabled="$ctrl.disabled">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

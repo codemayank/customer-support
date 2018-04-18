@@ -10,7 +10,7 @@ const express = require('express'),
 
 module.exports.controller = (app) => {
 
-    //route to submit a query.
+    //route to submit new query.
     router.post('/user/submit-query', authenticate, (req, res) =>{
         let newTicket = new ticket({
             email : req.user.email,
@@ -36,7 +36,7 @@ module.exports.controller = (app) => {
         });
     });
 
-    //route to show the queries to the user.
+    //route to send the queries to the user.
     router.get('/user/show-queries', authenticate, (req, res) => {
         console.log(req.user._id);
         ticket.find({
@@ -48,6 +48,7 @@ module.exports.controller = (app) => {
         });
     });
 
+    //route to send a specific query to the user.
     router.get('/user/:ticket_id', authenticate, (req, res)=>{
         console.log(req.user._id);
         console.log(req.params.ticket_id);
@@ -130,6 +131,7 @@ module.exports.controller = (app) => {
         }
     })
 
+    //route to show a specific query to the admin.
     router.get('/admin/:ticket_id', authenticate, (req, res)=>{
         console.log(req.user._id);
         console.log(req.params.ticket_id);

@@ -1,14 +1,57 @@
-<p>{{$ctrl.dashboard}}</p>
-<button class="btn btn-danger" ng-click="$ctrl.logout()">Logout</button>
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12 col-sm-10 col-md-6">
-            <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between align-items-center" ng-repeat="query in $ctrl.queryList">
-                    <a href="/#!/admin/show/{{query._id}}">{{query.qTitle}}-{{query._creator.username}}</a>
-                    <span ng-class="$ctrl.checkResolved(query.resolved)">{{query.resolved ? "Resolved" : "Pending"}}</span>
+<div class="wrapper">
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">{{$ctrl.username | uppercase}} - Query DashBoard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        Filter By Status
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" ng-click="status = 'open'">Show Open Queries</a>
+                        <a class="dropdown-item" ng-click="status = 'Closed'">Show Closed Queries</a>
+                        <a class="dropdown-item" ng-click="status = ''">Show All Queries</a>
+                    </div>
                 </li>
             </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" ng-model = "user" type="search" placeholder="Filter By User" aria-label="Search">
+            </form>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/#!/" ng-click="$ctrl.logout()">Logout</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+    <div class="container">
+        <div class="list-group mt-4 mb-4">
+            <a ng-repeat="query in $ctrl.queryList | orderBy : '-createdAt' | filter : status | filter : user" href="/#!/admin/show/{{query._id}}" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h6 class="mb-1">{{query.qTitle}}</h6>
+                    <small>{{query.createdAt | amCalendar:referenceTime:formats}}</small>
+                </div>
+                <div>
+                    <small>Created By : {{query._creator.username}}</small>
+                </div>
+                <div>
+                    <div>
+                        <small>Resolution : </small>
+                        <small ng-class="$ctrl.checkResolved(query.resolved)">{{query.resolved ? "Resolved" : "Pending"}}</small>
+                    </div>
+
+                    <small>Status</small> :
+                    <small class="pull-right" ng-class="$ctrl.checkStatus(query.status)">{{$ctrl.ticket.status === "Closed" ? "Closed" : "Open";}}</small>
+                </div>
+            </a>
         </div>
     </div>
 </div>

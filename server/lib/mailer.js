@@ -4,49 +4,64 @@ const nodemailer = require('nodemailer'),
     Q = require('q',)
     queryEventEmitter = new events.EventEmitter();
 
+
+//Import the emailAuth credentials
+const emailAuth = require('../env.js');
+
+
+//Event listener to listen to the event when query is created by the user and send the email to all admins.
 queryEventEmitter.once('queryCreated', (data) => {
-    // console.log('a query was fired -->', data.ticket);
-    let content = {
-        subject : data.ticket.qTitle + " " + data.ticket._id + " " + data.ticket.createdAt,
-        text : data.ticket.qDescription
+    if(emailAuth.useEmail){
+        let content = {
+            subject : data.ticket.qTitle + " " + data.ticket._id + " " + data.ticket.createdAt,
+            text : data.ticket.qDescription
+        }
+        data.db.find({}, "email").then((admin)=>{
+            let promises = []
+            admin.forEach((admin)=>{
+                promises.push(sendEmail(admin.email, content)); 
+            })
+            return Q.all(promises).then(()=>{
+                console.log('emails sent');
+            }).catch((e)=>{
+                console.log(e);
+            })
+        })
+    }else{
+        console.log('email service has been disabled');
     }
-    data.db.find({}, "email").then((admin)=>{
-        // console.log('array of e-mails', admin);
-        let promises = []
-        admin.forEach((admin)=>{
-            promises.push(sendEmail(admin.email, content)); 
-        })
-        // console.log(promises);
-        return Q.all(promises).then(()=>{
-            return // console.log('emails sent');
-        }).catch((e)=>{
-            // console.log(e);
-        })
-    })
+
 })
 
+
+//Event listener to send email when a new message is submitted by either the admin or user
 queryEventEmitter.once('messageSent', (data)=>{
-    // console.log('a message was iced -->', data.message)
-    // console.log('ticket --> ', data.ticket)
-    let content = {
-        subject : data.ticket.qTitle + " " + data.ticket._id + " " + data.ticket.createdAt,
-        text : data.message.text
+    if(emailAuth.useEmail){
+        let content = {
+            subject : data.ticket.qTitle + " " + data.ticket._id + " " + data.ticket.createdAt,
+            text : data.message.text
+        }
+    
+        data.db.find(data.queryValue, "email").then((user)=>{
+            user.forEach((user)=>{
+                sendEmail(user.email, content)
+            })
+        }).catch((e)=>{
+            console.log('there was an error in sending the message.', e)
+        })
+    }else{
+        console.log('email service has been disabled');
     }
 
-    data.db.find(data.queryValue, "email").then((user)=>{
-        // console.log('array of e-mails', user);
-        user.forEach((user)=>{
-            sendEmail(user.email, content)
-        })
-        // // console.log('email sent');
-    }).catch((e)=>{
-        // console.log('there was an error in sending the message.', e)
-    })
 
 })
 
+
+//Event listener to listen to status changes for the query when the user edits deletes or marks a query resolved a email is sent to the client.
 queryEventEmitter.once('queryAction', (data)=>{
-    // console.log('query modified event was fired', data);
+
+    if(emailAuth.useEmail){
+
     let content = {
         subject : " Query ID: " + data.ticket_id.substring(data.ticket_id.length-5, data.ticket_id.length),
         text : "Subject query has been" + " " + data.action + " " +  "by the user."
@@ -55,27 +70,35 @@ queryEventEmitter.once('queryAction', (data)=>{
         admins.forEach((admin)=>{
             sendEmail(admin.email, content)
         })
-        // console.log('email sent');
     }).catch((e)=>{
-        // console.log('there was an error in sending the message', e)
+        console.log('there was an error in sending the message ', e);
     })
+    }else{
+        console.log('email service has been disabled');
+    }
 })
 
+//send email function.
 let sendEmail = (email, content) => {
-    let smtpTransport = nodemailer.createTransport({
-        service: 'SendGrid',
-        auth: {
-            user: 'myan123',
-            pass: "$~f).Vv$36'6dApF"
+
+    //check if email service has been enabled by the user
+    if(emailAuth.useEmail){
+        let smtpTransport = nodemailer.createTransport({
+            service: emailAuth.service,
+            auth: emailAuth.auth
+        });
+        let mailOptions = {
+            to: email,
+            from: 'customer-support@demo.com',
+            subject: content.subject,
+            text: content.text
         }
-    });
-    let mailOptions = {
-        to: email,
-        from: 'customer-support@demo.com',
-        subject: content.subject,
-        text: content.text
+        return smtpTransport.sendMail(mailOptions);
+    }else{
+        return 'Email service has been disabled.'
     }
-    return smtpTransport.sendMail(mailOptions);
+
+
 
 
 }

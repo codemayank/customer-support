@@ -13,6 +13,7 @@
       register: register
     });
 
+    //check if the user is logged in
     function isLoggedIn() {
       if (user) {
         console.log(user);
@@ -22,6 +23,7 @@
       }
     }
 
+    //service to get the user status from the server.
     function getUserStatus() {
       return $http({
         method: 'GET',
@@ -43,6 +45,7 @@
         })
     }
 
+  
     function logout() {
 
       var deferred = $q.defer();
@@ -68,10 +71,11 @@
       return deferred.promise;
     }
 
+    //service to login and register users /admins
     function register(url, credentials, headers = null) {
-      var index = 0;
+      var index = 0; //specify the index to get user role from the response. 0 for userAuth and 1 for adminAuth. 
       if (credentials.admin_id) {
-        index = 1;
+        index = 1; 
       }
       var deferred = $q.defer();
       $http({

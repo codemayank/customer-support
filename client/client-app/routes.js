@@ -3,6 +3,7 @@
     angular.module('app')
         .config(function ($routeProvider) {
             $routeProvider
+                //declare the routes all routes have access property to check whether the given user has access to certain pages or not.
                 .when('/', {
                     template: '<landing></landing>',
                     access: {
@@ -57,33 +58,26 @@
                         role: 'adminAuth'
                     }
                 })
-                .when('/access-denied', {
-                    template: '<access-denied></access-denied>',
-                    access: {
-                        restricted: false
-                    }
-                })
                 .otherwise({
                     redirectTo: '/'
                 });
         });
 
 
-    angular.module('app').run(function ($rootScope, $location, $route, authService) {
+    angular.module('app').run(function ($rootScope, $location, $route, authService, Notification) {
         $rootScope.$on('$routeChangeStart', function (event, next, current) {
-            if(next.access.restricted){
+            if(next.access.restricted){ //check if the route being accessed is a restricted route
                 authService.getUserStatus()
                 .then(function () {
                     var userRole = window.localStorage.userRole;
-                    if (!authService.isLoggedIn()) {
-                        console.log(authService.isLoggedIn())
+                    if (!authService.isLoggedIn()) { //check if the use is logged in.
                         $location.path('/')
                         $route.reload();
                     }
-                    if (authService.isLoggedIn() && next.access.role != userRole) {
-                        console.log('access denied');
-                        $location.path('/access-denied');
-                        $route.reload();
+                    if (authService.isLoggedIn() && next.access.role != userRole) { // check if user is allowed to access the route based on their role.
+                        $location.path('/'); //if not return to home page
+                        Notification.danger('Access Denied').
+                        $route.reload();                        
                     }
                 });
             } 

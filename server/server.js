@@ -4,9 +4,8 @@ const express = require('express'),
       bodyParser = require('body-parser'),
       path = require('path'),
       publicPath = path.join(__dirname, '../client'),
-      async = require('async'),
-      port = process.env.PORT || 3000,
-      
+      port = process.env.PORT || 3000, //specify the port
+      //import the models
       ticketModel = require('./models/query-model'),
       userModel = require('./models/user-model'),
       messageModel = require('./models/message-model');
@@ -40,9 +39,10 @@ mongoose.connection.on("error", (error) => {
     console.log("ERROR: " + error);
 });
 
+//establish database connection.
 mongoose.connect('mongodb://localhost/user_support')
 
-
+//Import the routes
 let queryRoute = require('./controllers/query-controller');
 queryRoute.controller(app);
 

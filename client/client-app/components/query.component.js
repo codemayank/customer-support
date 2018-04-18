@@ -2,14 +2,15 @@
     'use strict;'
     angular.module('app')
         .component('queryDetail', {
-            css: './client-app/templates/styles/user-detail.css',
+            css: './client-app/templates/styles/query-detail.css',
             templateUrl: './client-app/templates/query-detail.component.html',
-            controller: function ($location, $http, $q, $routeParams, queryService) {
+            controller: function ($location, $http, $q, $routeParams, queryService, Notification) {
                 var vm = this;
                 vm.textLimit = 100;
                 vm.admin = false;
                 vm.username = window.localStorage.username;
-
+                Notification.clearAll()
+                //load the query
                 vm.$onInit = function () {
                     console.log($routeParams);
                     var url = '/query/user/' + $routeParams.query_id;
@@ -41,7 +42,7 @@
                     var method = 'POST';
                     console.log(vm.ticket._id);
                     if (vm.action === 'edit') {
-                        url = '/query/edit-message/' + vm.ticket._id + '/' + vm.selectedMessage._id;
+                        url = '/query/edit-message/' + vm.ticket._id + "/" + vm.selectedMessage._id;
                         method = 'PUT';
                         message = {text : vm.messageEditForm.messageBody}
                         console.log(url, method);
@@ -110,7 +111,6 @@
                         vm.disableCloseQuery = false;
                     })
                 }
-                //TODO: provide a button for this function in the view.
                 vm.deleteTicket = function(){
                     vm.disableDeleteTicket = true;
                     var url = '/query/user/delete-query/' + vm.ticket._id;

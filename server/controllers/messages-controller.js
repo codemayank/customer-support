@@ -10,17 +10,15 @@ const express = require('express'),
     _ = require('lodash');
 
 module.exports.controller = (app) => {
-    //route to submit replies to the admins answers
+
+    //route to submit messages to queries
     router.post('/submit-message/:ticket_id', authenticate, (req, res) => {
-        // console.log(req.body);
         let newMessage = req.body;
         newMessage.from = { id : req.user.id, username : req.user.username}
         newMessage.createdAt = new Date().getTime();
-        // console.log(req.body);
+
         ticket.findOne({'_id' : req.params.ticket_id}).populate('messages').exec((err, ticket) => {
-            // console.log('printing ticket', ticket);
             if (err) {
-                // console.log('submit message : ticket find error')
                 res.send(err);
             }if(!ticket){
                 res.send('there was an error in retreiving the ticket at this moment.')
@@ -29,13 +27,11 @@ module.exports.controller = (app) => {
                 if(ticket._creator.id == req.user.id || req.user.tokens[0].access === 'adminAuth'){
                     message.create(newMessage, (err, message) => {
                         if (err) {
-                            // console.log('submit message : create message error')
                             res.send(err);
                         } else {
                             ticket.messages.push(message);
                             ticket.save()
                             res.send({ticket});
-                            //fire event to send e-mail to the user that they have received the response from an admin.
                             let userType = user.Admin
                             let queryValue = {}
                             if(req.user.tokens[0].access === 'adminAuth'){
@@ -55,17 +51,15 @@ module.exports.controller = (app) => {
         });
     })
 
-    //edit message route
+    //route to edit a message
     router.put('/edit-message/:query_id/:message_id', authenticate, (req, res) => {
-        console.log('user_id', req.user._id)
         message.findByIdAndUpdate({ '_id': req.params.message_id, 'from.id': req.user.id }, { 'text': req.body.text }, (err, updatedMessage) => {
             if (err) {
-                // // console.log('edit-message: edit message error');
                 res.send(err)
             } else {
                 ticket.findOne({ '_id': req.params.query_id }).populate('messages').exec((err, ticket) => {
                     if (err) {
-                        // console.log('could not find ticket');
+                        res.send('Could not find ticket');
                     } else {
                         res.send({ticket});
                     }
@@ -74,7 +68,7 @@ module.exports.controller = (app) => {
         })
     });
 
-    //delete message route
+    //route to delete a message
     router.delete('/delete-message/:message_id', authenticate, (req, res) => {
         message.findByIdAndRemove({'_id' : req.params.message_id, 'from.id' : req.user.id}, (err) => {
             if (err) {

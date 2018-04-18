@@ -35,7 +35,7 @@
         <form id="reply" class="form collapse" ng-submit="$ctrl.submitMessage()">
             <div class="form-group">
                 <label>Reply</label>
-                <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.messageForm.messageBody"></textarea>
+                <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.messageForm.messageBody" required></textarea>
             </div>
             <div>
                 <button type="submit" class="btn btn-sm btn-primary" ng-disabled="$ctrl.disableSubmit">Submit Message</button>
@@ -66,7 +66,7 @@
                     <form ng-if="$ctrl.selectedMessage === message" id="edit" class="form collapse" ng-submit="$ctrl.submitMessage()">
                         <div class="form-group mt-3">
                             <label>Edit Message</label>
-                            <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.messageEditForm.messageBody"></textarea>
+                            <textarea class="form-control" id="QueryDescription" rows="3" ng-model="$ctrl.messageEditForm.messageBody" required></textarea>
                         </div>
                         <div>
                             <button type="submit" class="btn btn-sm btn-primary" ng-disabled="$ctrl.disableSubmit">Submit Message</button>

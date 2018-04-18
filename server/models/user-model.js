@@ -5,8 +5,12 @@ const bcrypt = require('bcryptjs'),
       crypto = require('crypto'),
       nodemailer = require('nodemailer'),
       _ = require('lodash'),
-      jwtSecret = 'Random_Secret';
+      jwtSecret = 'Random_Secret'; //specify the secret to be used for generating the jwt token.
 
+//import email auth credentials
+const emailAuth = require('../env.js');
+
+//specify base schema for user and admins.
 let UserSchema = function (add) {
       let Schema = new mongoose.Schema({
             username: {
@@ -26,7 +30,13 @@ let UserSchema = function (add) {
             phoneNumber: {
                   type: Number,
                   required: true,
-                  unique: true
+                  unique: true,
+                  validate: {
+                        validator: function(v){
+                              return /^\d{10}$/.test(v);
+                        },
+                        message : '{VALUE} is not a valid Phone Number!'
+                  }
             },
             password: {
                   type: String,
@@ -47,7 +57,7 @@ let UserSchema = function (add) {
             resetPasswordToken: String,
             resetPasswordExpires: Date
       });
-
+      //schema method to send only specific data to the client.
       Schema.methods.toJSON = function () {
             let user = this;
             let userObject = user.toObject();
@@ -59,13 +69,14 @@ let UserSchema = function (add) {
             return _.pick(userObject, ['_id', 'username', 'roles']);
       }
 
+      //schema method to generate the authentication token.
       Schema.methods.generateAuthToken = function (userAccess) {
             let user = this;
             let access = userAccess;
             let token = jwt.sign({
                   _id: user._id.toHexString(),
                   access
-            }, jwtSecret, {expiresIn : '7d'}).toString(); //generated token expires in 7 days.
+            }, jwtSecret, {expiresIn : '7d'}).toString(); //use jwt to generate new token. generated token expires in 7 days.
 
             if (user.tokens.length != 0) {
                   user.tokens.splice(0, 1);
@@ -79,7 +90,7 @@ let UserSchema = function (add) {
                   return token;
             });
       }
-
+      //schema method to remove token.
       Schema.methods.removeToken = function (token) {
             let user = this;
             return user.update({
@@ -91,17 +102,16 @@ let UserSchema = function (add) {
             });
       };
 
+      //schema method to create reset password token.
       Schema.statics.createResetPasswordToken = function (email, host) {
-            // console.log("email -->",email);
-            // console.log("host-->", host);
-            let User = this;
+            if(emailAuth.useEmail){
+                  let User = this;
             let buf = crypto.randomBytes(20);
             let token = buf.toString('hex');
             return User.findOne({
                         'email': email
                   })
                   .then((user) => {
-                        // console.log('User-->',user)
                         if (!User) {
                               return Promise.reject(`no User with email-id ${email} exists`);
                         }
@@ -112,13 +122,9 @@ let UserSchema = function (add) {
                         })
                   })
                   .then((user) => {
-                        // console.log('token & User -->', token, user);
                         let smtpTransport = nodemailer.createTransport({
-                              service: 'SendGrid',
-                              auth: {
-                                    user: 'myan123',
-                                    pass: "$~f).Vv$36'6dApF"
-                              }
+                              service: emailAuth.service,
+                              auth: emailAuth.auth
                         });
                         let mailOptions = {
                               to: user.email,
@@ -131,57 +137,60 @@ let UserSchema = function (add) {
                         }
         
                         return smtpTransport.sendMail(mailOptions).then(() => {
-                              //  console.log('mail has been sent')
                               return {
                                     message: 'email sent.'
                               }
                         })
                   })
-        
+            }else{
+                  return 'email service has been disabled. so password reset cannot be used.';
+            }
         }
 
-      
+        //schema method to change the password
         Schema.statics.changePassword = function(token, newPassword){
-            let User = this;
-            return User.findOne({
-                  resetPasswordToken : token,
-                  resetPasswordExpires : {
-                        $gt : Date.now()
-                  }
-            }).then((user)=>{
-                  if(!user){
-                        return Promise.reject('password reset token is invalid or has expired.')
-                  }
-                  user.password = newPassword;
-                  user.resetPasswordToken = undefined;
-                  user.resetPasswordExpires = undefined;
-
-                  return user.save().then(()=>{
-                        return user;
-                  })
-                  
-            })
-            .then((user)=>{
-                  let smtpTransport = nodemailer.createTransport({
-                        service: 'SendGrid',
-                        auth: {
-                              user: 'myan123',
-                              pass: "$~f).Vv$36'6dApF"
+            if(emailAuth.useEmail){
+                  let User = this;
+                  return User.findOne({
+                        resetPasswordToken : token,
+                        resetPasswordExpires : {
+                              $gt : Date.now()
                         }
-                  });
-                  let mailOptions = {
-                        to : user.email,
-                        from : 'passwordreset@demo.com',
-                        subject : 'Your Password has been changed',
-                        text : 'Your password has been changed successfully'
-                  }
-                  return smtpTransport.sendMail(mailOptions).then(()=>{
-                        // console.log('e-mail has been sent successfully.')
-                        return {message : 'password successfully changed.'}
+                  }).then((user)=>{
+                        if(!user){
+                              return Promise.reject('password reset token is invalid or has expired.')
+                        }
+                        user.password = newPassword;
+                        user.resetPasswordToken = undefined;
+                        user.resetPasswordExpires = undefined;
+      
+                        return user.save().then(()=>{
+                              return user;
+                        })
+                        
                   })
-            })
+                  .then((user)=>{
+                        let smtpTransport = nodemailer.createTransport({
+                              service: emailAuth.service,
+                              auth: emailAuth.auth
+                        });
+                        let mailOptions = {
+                              to : user.email,
+                              from : 'passwordreset@demo.com',
+                              subject : 'Your Password has been changed',
+                              text : 'Your password has been changed successfully'
+                        }
+                        return smtpTransport.sendMail(mailOptions).then(()=>{
+                              return {message : 'password successfully changed.'}
+                        })
+                  })
+            }else{
+                  return 'email service has been disabled. so password reset cannot be used.';
+            }
+
       }
 
+      //schema method to verify the jwt token.
       Schema.statics.findByToken = function (token) {
             let User = this;
             let decoded;
@@ -200,6 +209,7 @@ let UserSchema = function (add) {
 
       }
 
+      //schema method to verify the login credentials of the user / admin.
       Schema.statics.findByCredentials = function (password, username = 0, admin_id = 0) {
             let User = this;
             return User.findOne({
@@ -209,24 +219,23 @@ let UserSchema = function (add) {
                         admin_id
                   }]
             }).then((user) => {
-                  // console.log(user)
                   if (!user) {
-                        let message = "user Not found.";
+                        let message = "Loginerr1";
                         return Promise.reject(message);
                   }
                   return new Promise((resolve, reject) => {
                         bcrypt.compare(password, user.password, (err, res) => {
                               if (res) {
                                     resolve(user);
-                                    // console.log('user resolved i.e. password matches');
                               } else {
-                                    reject();
+                                    reject('Loginerr2');
                               }
                         })
                   })
             })
       }
 
+      //Encrypt password before saving to the database.
       Schema.pre('save', function (next) {
             let user = this;
 
@@ -250,8 +259,11 @@ let UserSchema = function (add) {
       return Schema;
 }
 
+//specify user schema
 let userSchema = new UserSchema();
 let User = mongoose.model('User', userSchema);
+
+//specify admin schema with addition of admin_id property to the base schema.
 let adminSchema = new UserSchema({
       admin_id: {
             type: Number,

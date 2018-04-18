@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+
+//specify messages schema
 let messageSchema = new mongoose.Schema({
     text : {type:String},
     from:{
