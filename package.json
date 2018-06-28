@@ -4,7 +4,9 @@
   "description": "A ticket based customer support system",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "heroku-postbuild": "./bowerInstall.sh"
   },
   "author": "Mayank Yadav",
   "license": "ISC",
@@ -12,6 +14,7 @@
     "async": "^2.6.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
+    "dotenv": "^6.0.0",
     "express": "^4.16.3",
     "jsonwebtoken": "^8.2.1",
     "lodash": "^4.17.5",
