@@ -35,64 +35,6 @@ The Project is can be divided in two parts User End accessible to the users / cu
     the admin id will be provided by the company and only the company employees that have the admin id
     can register on the app as admins. Admin ids can be stored in the db and checked for vaildity during admin registration. Currently this feature has not been implemented.
 
-### Usage
-
-To run the app on local server on your machine.
-
-You will need the following programs
-
-1.  Node.js
-2.  MongoDB
-3.  npm
-4.  bower
-
-Once you have the above programs installed follow the below steps.
-
-1.  clone the repository
-
-```bash
-  git clone https://github.com/codemayank/customer-support.git
-```
-
-2.  Navigate to the directory where the sourcecode for conversations has been downloaded.
-
-3.  install all the server side dependencies.
-
-```bash
-  npm install
-```
-
-4.  install all the client side dependencies.
-
-```bash
-  cd client
-  bower install
-```
-
-5.  run to install if bower not already installed.
-
-```bash
-  npm install bower -g
-```
-
-6.  In the .env file set the following specifications
-
-```
-MONGODB_URI = //URL of the mongodb server
-USE_EMAIL = # set to true if you want to the app to send email notifications else set to false
-EMAIL_SERVICE = # specify the email service name
-EMAIL_USERNAME = # specify the username at the email service
-EMAIL_PASSWORD = # specify the password at the email service
-```
-
-7.  start the app.
-
-```bash
-  node server/server.js
-```
-
-8.  The app should now be open on localhost port 3000.
-
 ### Created by
 
 Mayank yadav
